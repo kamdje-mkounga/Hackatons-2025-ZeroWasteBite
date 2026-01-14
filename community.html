@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Page</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { display: flex; background: #f8f9fa; color: #333; }
+
+    /* Sidebar (consistent with Org Dashboard) */
+    .sidebar { width: 220px; background: #1a2b3c; color: #fff; min-height: 100vh; padding: 20px; position: fixed; top: 0; left: -240px; transition: left 0.3s ease; z-index: 200; }
+    .sidebar.open { left: 0; }
+    .sidebar .logo { font-size: 20px; font-weight: bold; margin-bottom: 30px; }
+    .sidebar nav a { display: block; padding: 10px; margin: 8px 0; color: #ddd; text-decoration: none; border-radius: 6px; transition: 0.3s; }
+    .sidebar nav a:hover { background: #2e444e; color: #fff; }
+
+    /* Main wrapper */
+    .main { margin-left: 0; padding: 20px; width: 100%; transition: margin-left 0.3s ease; }
+    .main.shift { margin-left: 220px; }
+
+    /* Topbar */
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .topbar h2 { font-size: 20px; }
+    .burger { font-size: 24px; cursor: pointer; margin-right: 10px; }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar .profile { display: flex; align-items: center; gap: 10px; }
+    .topbar img { border-radius: 50%; }
+
+    /* Content Layout */
+    .content-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 20px; padding: 16px; }
+    @media(max-width: 980px){ .content-grid { grid-template-columns: 1fr; } }
+
+    /* Composer */
+    .composer { background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.08); padding:14px; margin-bottom:14px; }
+    .composer-top { display:flex; gap:12px; align-items:flex-start; }
+    .avatar { width:40px; height:40px; border-radius:50%; background:#e6eef5; display:inline-flex; align-items:center; justify-content:center; font-weight:700; color:#3aa76d; }
+    .composer textarea { flex:1; width:100%; border:1px solid #e3e8ee; border-radius:10px; padding:10px 12px; resize:vertical; min-height:60px; font-size:14px; }
+    .composer-actions { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+    .composer-actions .left { display:flex; gap:8px; }
+    .chip { background:#f1f5f9; color:#475569; border:1px solid #e2e8f0; padding:6px 10px; border-radius:999px; font-size:12px; cursor:pointer; }
+    .btn { background:#3aa76d; color:#fff; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:600; }
+    .btn.secondary { background:#eef2f7; color:#334155; }
+    .count { font-size:12px; color:#6b7280; margin-left:8px; }
+
+    /* Banner image card */
+    .banner-card { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); margin-bottom:14px; border:1px solid #eef2f7; }
+    .banner-card img { width:100%; display:block; }
+
+    /* Tabs */
+    .tabs { display:flex; background:#fff; border:1px solid #e5e7eb; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .tab { flex:1; text-align:center; padding:10px 12px; cursor:pointer; color:#64748b; font-weight:600; }
+    .tab.active { background:#f8fafc; color:#111827; }
+
+    /* Post cards */
+    .feed { margin-top:14px; }
+    .post { background:#fff; padding:14px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom:12px; border:1px solid #eef2f7; }
+    .post-header { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .post-user { font-weight:700; color:#1f2937; }
+    .post-time { font-size:12px; color:#6b7280; }
+    .post-text { font-size:14px; color:#374151; line-height:1.6; margin:8px 0 10px; }
+    .post-actions { display:flex; align-items:center; gap:12px; }
+    .icon-btn { background:#f1f5f9; border:1px solid #e2e8f0; color:#1f2937; border-radius:8px; padding:6px 10px; cursor:pointer; font-size:12px; }
+    .icon-btn.active { background:#dcfce7; border-color:#86efac; color:#166534; }
+
+    /* Right widgets */
+    .widget { background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:14px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .widget + .widget { margin-top:14px; }
+    .widget h4 { margin-bottom:10px; color:#111827; }
+    .trend { display:flex; justify-content:space-between; align-items:center; font-size:14px; padding:8px 0; border-bottom:1px dashed #eef2f7; }
+    .trend:last-child { border-bottom:0; }
+    .guidelines li { font-size:13px; color:#475569; margin-left:16px; margin-bottom:6px; }
+    .badge { background:#e8f5ee; color:#166534; font-weight:700; padding:2px 8px; border-radius:999px; font-size:12px; }
+
+    /* Following section */
+    #following { background:#fff; padding:14px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin:16px 0; border:1px solid #eef2f7; }
+    #following h2 { margin-bottom:8px; font-size:16px; }
+    .follow-user { margin-bottom:10px; }
+
+    /* Load more */
+    .load-more { display:block; width:100%; background:#fff; border:1px solid #e5e7eb; color:#111827; padding:10px; border-radius:10px; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="logo">🍏 Food Rescue</div>
+    <nav>
+      <a href="Org Dashboard.html">Dashboard</a>
+      <a href="Food Marketplace.html" class="active">Food Marketplace</a>
+      <a href="recipe.html" class="active">Recipe reuse & storage Guide </a>
+      <a href="community.html">Community</a>
+   
+      <a href="Partners.html">Partners</a>
+      <a href="blog.html">Blog</a>
+      <a href="Game.html" class="active">Gamified</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    </nav>
+  </aside>
+
+<!-- Main content -->
+<div class="main" id="main">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="burger" id="burger">☰</span>
+      <h2>Food Rescue Community</h2>
+    </div>
+    <div class="profile">
+      <span>Profile</span>
+      <img src="https://via.placeholder.com/40" alt="User">
+    </div>
+  </header>
+
+<div class="content-grid">
+  <div>
+    <!-- Banner Image -->
+    <div class="banner-card">
+      <img src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=1200" alt="Community Food Banner">
+    </div>
+
+    <!-- Composer -->
+    <div class="composer">
+      <div class="composer-top">
+        <div class="avatar">FR</div>
+        <textarea id="newPost" rows="3" placeholder="Share an update, a question, or a resource..."></textarea>
+      </div>
+      <div class="composer-actions">
+        <div class="left">
+          <span class="chip" id="chip-tip">Tip</span>
+          <span class="chip" id="chip-event">Event</span>
+          <span class="chip" id="chip-need">Need Help</span>
+          <span class="count" id="charCount">0/280</span>
+        </div>
+        <button class="btn" id="postBtn">Post</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-tab="all">All</div>
+      <div class="tab" data-tab="following">Following</div>
+      <div class="tab" data-tab="mine">My Posts</div>
+    </div>
+
+    <!-- Feed -->
+    <div class="feed" id="feed"></div>
+    <button class="load-more" id="loadMore" style="display:none;">Load More</button>
+  </div>
+
+  <!-- Right column widgets -->
+  <aside>
+    <div class="widget">
+      <h4>Trending Topics</h4>
+      <div class="trend"><span>#FoodRescue</span><span class="badge">1.2k</span></div>
+      <div class="trend"><span>#ZeroWaste</span><span class="badge">980</span></div>
+      <div class="trend"><span>#CommunityKitchen</span><span class="badge">745</span></div>
+      <div class="trend"><span>#AnimalFeed</span><span class="badge">612</span></div>
+    </div>
+    <div class="widget">
+      <h4>Top Contributors</h4>
+      <div class="trend"><span>Green Earth NGO</span><span class="badge">+58</span></div>
+      <div class="trend"><span>Happy Meals</span><span class="badge">+43</span></div>
+      <div class="trend"><span>EcoHostels</span><span class="badge">+37</span></div>
+    </div>
+    <div class="widget">
+      <h4>Community Guidelines</h4>
+      <ul class="guidelines">
+        <li>Be respectful and constructive.</li>
+        <li>No solicitations without context.</li>
+        <li>Credit sources and data.</li>
+        <li>Flag inappropriate content.</li>
+      </ul>
+    </div>
+  </aside>
+</div>
+
+<!-- Following Section -->
+<section id="following">
+  <h2>Following</h2>
+  <div id="following-list"></div>
+</section>
+
+<script>
+  // Burger toggle
+  const burger = document.getElementById('burger');
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('main');
+  burger.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    main.classList.toggle('shift');
+  });
+
+  // Logout
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('currentUser');
+      window.location.href = 'login.html';
+    });
+  }
+
+  const feed = document.getElementById("feed");
+  const tabs = document.querySelectorAll('.tab');
+  const postBtn = document.getElementById('postBtn');
+  const newPostInput = document.getElementById('newPost');
+  const charCount = document.getElementById('charCount');
+  const loadMoreBtn = document.getElementById('loadMore');
+  const followingUsers = { "Green Earth NGO": true }; // example of pre-followed
+
+  let activeTab = 'all';
+  let visibleCount = 5;
+
+  // Sample posts with timestamps and likes
+  const posts = [
+    { user: "Green Earth NGO", text: "Excited to join this amazing initiative!", ts: Date.now()-3600_000*2, likes: 12 },
+    { user: "Happy Meals Restaurant", text: "We donated 120 meals today 🍲", ts: Date.now()-3600_000*5, likes: 34 },
+    { user: "EcoHostels", text: "Just launched our composting project!", ts: Date.now()-3600_000*26, likes: 21 },
+    { user: "City Shelter", text: "Thanks to all volunteers who showed up today ❤️", ts: Date.now()-3600_000*30, likes: 15 },
+    { user: "You", text: "Glad to be part of this community!", ts: Date.now()-3600_000*40, likes: 4 }
+  ];
+
+  function timeAgo(ts){
+    const diff = Math.floor((Date.now()-ts)/1000);
+    const map = [ ['d',86400], ['h',3600], ['m',60] ];
+    for(const [label,sec] of map){
+      if(diff>=sec) return `${Math.floor(diff/sec)}${label}`;
+    }
+    return `${diff}s`;
+  }
+
+  function renderFeed(){
+    feed.innerHTML = '';
+    const filtered = posts.filter(p => {
+      if(activeTab==='following') return !!followingUsers[p.user];
+      if(activeTab==='mine') return p.user === 'You';
+      return true;
+    });
+    const list = filtered.sort((a,b)=>b.ts-a.ts);
+    const slice = list.slice(0, visibleCount);
+    slice.forEach(p => feed.appendChild(renderPostCard(p)));
+    loadMoreBtn.style.display = list.length>visibleCount ? 'block' : 'none';
+  }
+
+  function renderPostCard(p){
+    const card = document.createElement('div');
+    card.className = 'post';
+    card.innerHTML = `
+      <div class="post-header">
+        <div class="avatar">${(p.user||'U').slice(0,2).toUpperCase()}</div>
+        <div>
+          <div class="post-user">${p.user}</div>
+          <div class="post-time">${timeAgo(p.ts)} ago</div>
+        </div>
+      </div>
+      <div class="post-text">${escapeHtml(p.text)}</div>
+      <div class="post-actions">
+        <button class="icon-btn like-btn">👍 <span>${p.likes||0}</span></button>
+        <button class="icon-btn follow-btn">${followingUsers[p.user]? 'Following' : 'Follow'}</button>
+      </div>
+    `;
+    // like
+    card.querySelector('.like-btn').addEventListener('click', (e)=>{
+      p.likes = (p.likes||0)+1;
+      e.currentTarget.querySelector('span').textContent = p.likes;
+      e.currentTarget.classList.add('active');
+    });
+    // follow
+    card.querySelector('.follow-btn').addEventListener('click', (e)=>{
+      if(followingUsers[p.user]){ delete followingUsers[p.user]; e.currentTarget.textContent='Follow'; e.currentTarget.classList.remove('active'); }
+      else { followingUsers[p.user]=true; e.currentTarget.textContent='Following'; e.currentTarget.classList.add('active'); }
+    });
+    return card;
+  }
+
+  function escapeHtml(s){
+    return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+  }
+
+  // Tabs
+  tabs.forEach(t=>t.addEventListener('click', ()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    activeTab = t.dataset.tab;
+    visibleCount = 5;
+    renderFeed();
+  }));
+
+  // Composer behavior
+  newPostInput.addEventListener('input', ()=>{
+    const len = newPostInput.value.length;
+    charCount.textContent = `${len}/280`;
+    if(len>280){ newPostInput.value = newPostInput.value.slice(0,280); charCount.textContent = '280/280'; }
+  });
+
+  postBtn.addEventListener('click', ()=>{
+    const text = newPostInput.value.trim();
+    if(!text) return;
+    posts.unshift({ user: 'You', text, ts: Date.now(), likes: 0 });
+    newPostInput.value = '';
+    charCount.textContent = '0/280';
+    activeTab = 'mine';
+    document.querySelector('.tab.active').classList.remove('active');
+    document.querySelector('.tab[data-tab="mine"]').classList.add('active');
+    renderFeed();
+  });
+
+  // Load more
+  loadMoreBtn.addEventListener('click', ()=>{ visibleCount += 5; renderFeed(); });
+
+  // Initial render
+  renderFeed();
+</script>
+
+<!-- End main -->
+</div>
+
+</body>
+</html>

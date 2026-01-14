@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Food Marketplace — Food Reuse Platform</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" xintegrity="sha512-iecdLpQpL4hUoXF1J2o4x5i5r5Lp2gP8pW5f+3F5o8r7lG0gLwLgH7p6wJ1H3B8wR5Qp+rWc+g8p5/oF+mQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --green:#04560c;
+      --olive:#267b11;
+      --muted:#343837;
+      --card:#eae5e5;
+      --bg:#f7f7f796;
+      --accent:#dddddd;
+      --glass: rgba(237, 231, 220, 0.827);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:var(--bg);
+      color:rgba(56, 39, 74, 0.834);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Sidebar */
+    .sidebar { 
+      width: 220px; 
+      background: #1a2b3c; 
+      color: #fff; 
+      min-height: 100vh; 
+      padding: 20px; 
+      position: fixed; 
+      top: 0; 
+      left: -240px; 
+      transition: left 0.3s ease; 
+      z-index: 200; 
+    }
+    .sidebar.open { left: 0; }
+    .sidebar .logo { font-size: 20px; font-weight: bold; margin-bottom: 30px; }
+    .sidebar nav a { 
+      display: block; 
+      padding: 10px; 
+      margin: 8px 0; 
+      color: #ddd; 
+      text-decoration: none; 
+      border-radius: 6px; 
+      transition: 0.3s; 
+    }
+  .sidebar nav a:hover { background: #2e444e; color: #fff; }
+
+    /* Main Content */
+    .main { 
+      margin-left: 0; 
+      padding: 20px; 
+      width: 100%; 
+      transition: margin-left 0.3s ease; 
+    }
+    .main.shift { margin-left: 220px; }
+
+    /* Topbar */
+    .topbar { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 20px; 
+      background: var(--bg);
+      color: #114a05;
+      padding: 14px 22px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(25, 47, 25, 0.73);
+    }
+    .topbar h2 { font-size: 20px; margin: 0; }
+    .burger { font-size: 24px; cursor: pointer; margin-right: 10px; }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .nav-right a{color:#125307;text-decoration:none;padding:10px 10px;border-radius:8px}
+    .nav-right a:hover{background:rgba(155, 159, 159, 0.881)}
+    
+    /* New Nav styles */
+    .nav-item { position: relative; display: flex; align-items: center; gap: 8px; }
+    .nav-item:hover > .order-dropdown { display: block; }
+    .order-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      min-width: 250px;
+      max-height: 400px;
+      overflow-y: auto;
+      background: var(--card);
+      color: #213;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 8px;
+      z-index: 20;
+    }
+    .order-dropdown-content { font-size: 14px; }
+    .order-item-card {
+        background: var(--accent);
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 8px;
+    }
+    .order-item-card h5 { margin: 0 0 5px 0; font-size: 16px; color: var(--green); }
+    .order-item-card p { margin: 0; font-size: 12px; color: var(--muted); }
+    .shipping-tracker {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+    }
+    .shipping-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 10px;
+        color: var(--muted);
+        flex: 1;
+        text-align: center;
+        position: relative;
+    }
+    .shipping-step i {
+        font-size: 18px;
+        color: #ddd;
+        transition: color 0.3s;
+    }
+    .shipping-step.active i { color: var(--green); }
+    .shipping-step.active { color: var(--green); font-weight: 600; }
+    .shipping-tracker::before {
+        content: '';
+        position: absolute;
+        top: 10px;
+        left: 25px;
+        right: 25px;
+        height: 2px;
+        background: #ddd;
+        z-index: -1;
+    }
+    .shipping-tracker .line {
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background-color: #ddd;
+        left: 0;
+        top: 10px;
+        z-index: 1;
+    }
+    .shipping-tracker .line.active {
+        background-color: var(--green);
+        transition: background-color 0.5s ease-in-out;
+    }
+    .icon-only-btn { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; padding: 0 8px; }
+   
+
+    
+
+    /* Page container */
+    .wrap{max-width:1200px;margin:26px auto;padding:0 18px}
+
+    /* Title & quick controls */
+    .page-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    .page-head h1{margin:0;font-size:22px;color:var(--green)}
+    .tabs{display:flex;background:var(--card);border-radius:10px;overflow:hidden;box-shadow:0 6px 20px rgba(65, 96, 75, 0.264)}
+    .tab{padding:10px 16px;cursor:pointer;color:var(--muted);font-weight:600}
+    .tab.active{background:linear-gradient(180deg,var(--accent),#fff); color:var(--green)}
+
+    /* Controls row */
+    .controls{display:flex;gap:12px;align-items:center}
+    .search{
+      display:flex;align-items:center;gap:8px;background:#fff;border-radius:8px;padding:6px 10px;border:1px solid #e6efe9;
+      box-shadow: 0 2px 8px rgba(42, 48, 42, 0.767);
+    }
+    .search input{border:0;outline:0;width:260px;font-size:14px;padding:6px}
+    .btn{
+      background:var(--green);color:#f8f6f6;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600;
+      box-shadow: 0 4px 10px rgba(45,122,87,0.12);
+      transition: all 0.2s ease;
+    }
+    .btn.secondary{background:#fff;color:var(--green);border:1px solid #dfeee4}
+    .icon-btn{padding: 8px; font-size: 16px;}
+    .icon-btn:hover { background-color: var(--accent); }
+    
+    /* Layout */
+    .grid{display:grid;grid-template-columns: 1fr 360px; gap:32px;align-items:start}
+    @media (max-width:980px){ 
+      .grid{grid-template-columns:1fr} 
+      .search input{width:140px} 
+    }
+    
+    /* Responsive */
+    @media(max-width: 900px) { 
+      .charts { grid-template-columns: 1fr; } 
+    }
+    @media(max-width: 600px) { 
+      .main.shift { margin-left: 0; } 
+    }
+
+    /* Left column (listings) */
+    .panel{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 6px 20px rgba(100, 96, 96, 0.786)}
+    .panel h3{margin:0 0 10px 0;color:var(--green)}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .filter-chip{background:#f0fbf3;border:1px solid #e0efe3;padding:6px 8px;border-radius:999px;font-size:13px;color:#2d7a57;cursor:pointer}
+    .filter-chip.selected{background:var(--green);color:#fff}
+    .listings{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+    .card{
+      display:flex;gap:12px;align-items:center;background:linear-gradient(180deg,#fff,#fbfff9);padding:12px;border-radius:10px;border:1px solid #eef7ef;
+    }
+    .thumb{
+        width:88px;
+        height:68px;
+        border-radius:8px;
+        background:#eef6ee;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:var(--muted);
+        font-weight:700;
+    }
+    .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    .card-body{flex:1}
+    .card-title{font-weight:700;color:#103926;margin:0 0 6px 0}
+    .meta{font-size:13px;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+    .badge{padding:6px 8px;border-radius:8px;font-weight:700;font-size:13px}
+    .badge.free{background:#eafbf3;color:#146c3f}
+    .badge.price{background:#fff7e9;color:#9b6f00;border:1px solid #fdeec2}
+    .card-actions{display:flex;gap:8px;align-items:center}
+    .action-btn{background:var(--olive);color:#fff;border:0;padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:600}
+    
+    .countdown {
+        font-size: 13px;
+        font-weight: 600;
+        color: #ff4a4a;
+        margin-left: auto;
+        white-space: nowrap;
+    }
+
+    /* Right column (post form & impact) */
+    .side-card{background:var(--card);padding:20px;border-radius:10px;box-shadow:0 6px 20px rgba(0, 0, 0, 0.518)}
+    .side-card h4{margin:0 0 10px 0;color:var(--green)}
+    .form-row{display:flex;flex-direction:column;gap:10px;margin-bottom:10px}
+    .form-row label{font-size:13px;color:var(--muted)}
+    .form-row input[type="text"], .form-row input[type="number"], .form-row input[type="date"], .form-row select, .form-row textarea{
+      padding:8px;border-radius:8px;border:1px solid #e6efe9;background:#fff;outline:none;font-size:14px
+    }
+    .form-row textarea{resize:vertical;min-height:80px}
+    .small{font-size:13px;color:var(--muted)}
+    .payment-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .payment-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        border: 1px solid #e6efe9;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .payment-option input {
+        cursor: pointer;
+    }
+    
+    /* safety note */
+    .safety{background:#fff6f6;border-left:4px solid #ffb3b3;padding:10px;margin:12px 0;border-radius:6px;color:#7b2b2b}
+
+    /* impact counters */
+    .impact{display:flex;gap:12px}
+    .impact .tile{flex:1;background:#f8fff9;border-radius:8px;padding:12px;border:1px solid #e8f5ee;text-align:center}
+    .impact .num{font-size:20px;color:var(--green);font-weight:800}
+    .muted{color:var(--muted);font-size:13px}
+
+    /* contact modal */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(3, 6, 4, 0.716);align-items:center;justify-content:center;z-index:80}
+    .modal{
+      background:#fff;
+      padding:18px;
+      border-radius:10px;
+      width:450px;
+      max-width:92%;
+      box-shadow:0 10px 30px rgba(48, 47, 47, 0.734)
+    }
+    .modal h4{margin:0 0 8px 0}
+    .close{float:right;cursor:pointer;background:#eee;border-radius:6px;padding:4px 8px}
+
+    /* empty state */
+    .empty{padding:24px;border-radius:8px;background:#fff;border:1px dashed #e6efe9;color:var(--muted);text-align:center}
+
+    /* small helpers */
+    .row{display:flex;gap:8px;align-items:center}
+    .muted-2{color:#6b7a78}
+
+
+    /* NEW Form Styles */
+    .form-header {
+      text-align: center;
+      margin-bottom: 25px;
+      color: var(--green);
+    }
+
+    .form-header h2 {
+      margin: 0;
+      color: var(--text-color);
+      font-weight: 700;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #e6efe9;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 5px rgba(45, 122, 87, 0.5);
+    }
+    
+    .payment-mode-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .payment-mode-buttons label {
+      background-color: #f0fbf3;
+      padding: 12px;
+      flex-grow: 1;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s, border 0.3s;
+      border: 1px solid transparent;
+      font-weight: 600;
+    }
+
+    .payment-mode-buttons input[type="radio"] {
+      display: none;
+    }
+
+    .payment-mode-buttons input[type="radio"]:checked + label {
+      background-color: var(--accent);
+      border: 1px solid var(--green);
+      color: var(--green);
+    }
+
+    .payment-details {
+      border: 1px solid #eef7ef;
+      background-color: #f8fff9;
+      border-radius: 8px;
+      padding: 15px;
+      transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, padding 0.5s ease-in-out;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+    }
+
+    .payment-details.active {
+      max-height: 500px;
+      opacity: 1;
+      padding: 15px;
+    }
+    
+    .card-details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .card-details-grid .form-group:first-child,
+    .card-details-grid .form-group:nth-child(2) {
+      grid-column: span 2;
+    }
+    
+    .buttons-container {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    @media (min-width: 600px) {
+      .modal {
+        width: 600px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">🍏 Food Rescue</div>
+    <nav>
+      <a href="Org Dashboard.html">Dashboard</a>
+      <a href="Food Marketplace.html" class="active">Food Marketplace</a>
+      <a href="recipe.html" class="active">Recipe reuse & storage Guide </a>
+      <a href="community.html">Community</a>
+   
+      <a href="Partners.html">Partners</a>
+      <a href="blog.html">Blog</a>
+      <a href="Game.html" class="active">Gamified</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main" id="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="burger" id="burger">☰</span>
+        <h2>Food Marketplace — Buy · Sell · Donate Surplus Food</h2>
+      </div>
+      <div class="nav-right">
+        <div class="nav-item group" id="orderItemNav">
+          <a href="#"><i class="fas fa-list-alt"></i></a>
+          <span>Order Item</span>
+          <div class="order-dropdown">
+              <div id="ordered-items-container" class="order-dropdown-content">No ordered items to show.</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+  <main class="wrap">
+    <div class="page-head">
+      <h1>Food Marketplace</h1>
+
+      <!-- Tabs and search -->
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="tabs" id="tabs">
+          <div class="tab active" data-tab="private">Private (Household & Farmers)</div>
+          <div class="tab" data-tab="org">Organization (Shops, Restaurants & NGOs)</div>
+          <div class="tab" data-tab="waste">Waste (Composting)</div>
+        </div>
+
+        <div class="controls">
+          <div class="search">
+            <input id="searchBox" placeholder="Search item or org..." />
+            <button id="searchBtn" class="btn secondary icon-btn"><i class="fas fa-search"></i></button>
+          </div>
+          <button id="clearFilters" class="btn secondary icon-btn"><i class="fas fa-sync-alt"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT: listings -->
+      <section class="panel">
+        <h3>Available Listings</h3>
+
+        <!-- Filters -->
+        <div class="filters" id="filterRow">
+          <div class="filter-chip selected" data-filter="all">All</div>
+          <div class="filter-chip" data-filter="new">New</div>
+          <div class="filter-chip" data-filter="expiring">Expiring Soon</div>
+          <div class="filter-chip" data-filter="fruits">Fruits / Veg</div>
+          <div class="filter-chip" data-filter="dairy">Dairy</div>
+          <div class="filter-chip" data-filter="bakery">Bakery</div>
+          <div class="filter-chip" data-filter="meals">Cooked Meals</div>
+          <div class="filter-chip" data-filter="dry">Dry Foods</div>
+          <div class="filter-chip" data-filter="animal">Animal Feed</div>
+        </div>
+
+        <!-- safety -->
+        <div class="safety">
+          <strong>Safety note:</strong> Only list food that is safe and edible. Spoiled or unsafe items are prohibited.
+        </div>
+        
+        <!-- listings container -->
+        <div class="listings" id="listings"></div>
+
+        <!-- Show More/Show Less button -->
+        <div style="text-align: center; margin-top: 12px;">
+            <button id="showMoreLessBtn" class="btn secondary" style="display: none;">Show More</button>
+        </div>
+
+        <!-- empty placeholder -->
+        <div id="emptyState" class="empty" style="display:none">
+          No listings match current filters or search.
+        </div>
+      </section>
+
+      <!-- RIGHT: Post form & Impact -->
+      <aside>
+        <div class="side-card">
+          <h4>Post a Listing</h4>
+          <div class="small muted">Switch tab to choose Private or Organization form</div>
+
+          <!-- form type selection mirrors tabs -->
+          <div style="margin-top:12px">
+            <div class="form-row">
+              <label>Listing type</label>
+              <select id="listingType">
+                <option value="private">Private (Household / Farmer)</option>
+                <option value="org">Organization (Restaurant / Shop / NGO)</option>
+                <option value="waste">Waste (Composting)</option>
+              </select>
+            </div>
+
+            <!-- common -->
+            <div class="form-row">
+              <label>Category</label>
+              <select id="inputCategory">
+                <option value="meals">Cooked Meals</option>
+                <option value="fruits">Fruits / Veg</option>
+                <option value="dairy">Dairy</option>
+                <option value="bakery">Bakery</option>
+                <option value="dry">Dry Foods</option>
+                <option value="animal">Animal Feed</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label>Item name</label>
+              <input type="text" id="inputTitle" placeholder="e.g., Leftover Paneer Curry" />
+            </div>
+
+            <div class="form-row">
+              <label>Quantity (number, if weight in kg specify unit in title)</label>
+              <input type="number" min="0" step="1" id="inputQty" placeholder="e.g., 2 or 20" />
+            </div>
+
+            <div class="form-row">
+              <label>Expiry / Use-by</label>
+              <input type="date" id="inputExpiry" />
+            </div>
+
+            <div class="form-row">
+              <label>Price (leave 0 for free / donation)</label>
+              <input type="number" min="0" step="0.01" id="inputPrice" placeholder="0 = free" />
+            </div>
+
+            <!-- org-only extra -->
+            <div class="form-row" id="orgFields" style="display:none">
+              <label>Organization Name</label>
+              <input type="text" id="inputOrg" placeholder="e.g., FreshMart Grocery" />
+              <label style="margin-top:6px">Delivery available?</label>
+              <select id="inputDelivery"><option value="no">No (Pickup only)</option><option value="yes">Yes (Delivery available)</option></select>
+            </div>
+
+            <div class="form-row">
+              <label>Contact (phone / email)</label>
+              <input type="text" id="inputContact" placeholder="Phone or email" />
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button id="postBtn" class="btn">Post Listing</button>
+              <button id="resetBtn" class="btn secondary">Reset</button>
+            </div>
+
+            <div style="margin-top:12px" class="muted-2">Listings you post will appear immediately in the selected tab.</div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="side-card">
+          <h4>Impact</h4>
+          <div class="impact">
+            <div class="tile">
+              <div class="num" id="impactKg">0</div>
+              <div class="muted">kg food listed</div>
+            </div>
+            <div class="tile">
+              <div class="num" id="impactTx">0</div>
+              <div class="muted">meals estimated</div>
+            </div>
+            <div class="tile">
+              <div class="num" id="impactCount">0</div>
+              <div class="muted">listings posted</div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </main>
+  </div>
+
+  <!-- Contact / Booking modal (now a dynamic form) -->
+  <div class="overlay" id="order-form-overlay">
+    <div class="modal" id="order-form-modal">
+        <div class="close" id="close-order-form">✕</div>
+        <div id="order-form-body"></div>
+    </div>
+  </div>
+  
+  <!-- Success Message Modal -->
+  <div class="overlay" id="success-modal-overlay">
+      <div class="modal">
+          <div id="success-message"></div>
+          <div style="margin-top: 12px; text-align: right;">
+              <button class="btn secondary" id="success-ok-btn">OK</button>
+          </div>
+      </div>
+  </div>
+  
+  <!-- Alert Modal -->
+  <div class="overlay" id="alert-modal-overlay">
+    <div class="modal" id="alert-modal">
+        <div id="alert-message"></div>
+        <div style="margin-top: 12px; text-align: right;">
+            <button class="btn secondary" id="alert-ok-btn">OK</button>
+        </div>
+    </div>
+  </div>
+
+
+
+  <script>
+    // ---------- Data & initial dummy listings ----------
+    const initialListings = [
+      // private items (8 items per category)
+      {id:genId(), type:'private', title:'Leftover Paneer Curry', qty:2, expiry:getExpiryDate(2), price:120, category:'meals', contact:'+91 98765 43210', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000) },
+      {id:genId(), type:'private', title:'Homegrown Tomatoes (10kg)', qty:10, expiry:getExpiryDate(5), price:20, category:'fruits', contact:'farmer@farm.com', pickup:'Pickup', extra:'Farmer', datePosted: new Date(Date.now() - 86400000) },
+      {id:genId(), type:'private', title:'Homemade Apple Jam (2 jars)', qty:2, expiry:getExpiryDate(180), price:2, category:'dry', contact:'sara@home.com', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 2) },
+      {id:genId(), type:'private', title:'Backyard Lemons (3kg)', qty:3, expiry:getExpiryDate(10), price:0, category:'fruits', contact:'gardener@email.net', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 3) },
+      {id:genId(), type:'private', title:'Canned Green Beans (5 cans)', qty:5, expiry:getExpiryDate(300), price:1, category:'dry', contact:'pantry@clean.com', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 4) },
+      {id:genId(), type:'private', title:'Fresh Basil from Garden (1 bundle)', qty:1, expiry:getExpiryDate(1), price:0, category:'fruits', contact:'herb@grower.com', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 5) },
+      {id:genId(), type:'private', title:'Surplus Sourdough Starter', qty:1, expiry:getExpiryDate(7), price:0, category:'bakery', contact:'baker@bread.net', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 6) },
+      {id:genId(), type:'private', title:'Chicken Eggs (2 dozen)', qty:24, expiry:getExpiryDate(4), price:0.3, category:'dry', contact:'henhouse@farm.com', pickup:'Pickup', extra:'Farmer', datePosted: new Date(Date.now() - 3600000 * 7) },
+      {id:genId(), type:'private', title:'Mangoes (5 kg)', qty:5, expiry:getExpiryDate(3), price:0.5, category:'fruits', contact:'sunnyfarm@email.com', pickup:'Pickup', extra:'Farmer', datePosted: new Date(Date.now() - 3600000 * 8) },
+      {id:genId(), type:'private', title:'Homemade Cheese (2 blocks)', qty:2, expiry:getExpiryDate(14), price:5, category:'dairy', contact:'dairyqueen@home.net', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 9) },
+      {id:genId(), type:'private', title:'Leftover Tiramisu (5 portions)', qty:5, expiry:getExpiryDate(1), price:1.5, category:'bakery', contact:'pattycake@bakes.com', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 10) },
+      {id:genId(), type:'private', title:'Fresh Milk (1 litre)', qty:1, expiry:getExpiryDate(3), price:0.8, category:'dairy', contact:'milkman@farm.com', pickup:'Pickup', extra:'Farmer', datePosted: new Date(Date.now() - 3600000 * 11) },
+      {id:genId(), type:'private', title:'Quinoa (1 kg)', qty:1, expiry:getExpiryDate(400), price:2, category:'dry', contact:'healthnut@food.net', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 12) },
+      {id:genId(), type:'private', title:'Cooked Pasta (1 kg)', qty:1, expiry:getExpiryDate(0), price:0, category:'meals', contact:'chef@home.com', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 13) },
+      {id:genId(), type:'private', title:'Homemade Yogurt (500g)', qty:0.5, expiry:getExpiryDate(5), price:1, category:'dairy', contact:'yogurtmaker@email.net', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 14) },
+      {id:genId(), type:'private', title:'Surplus Dog Food (1 bag)', qty:5, expiry:getExpiryDate(60), price:10, category:'animal', contact:'doglover@pet.com', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 15) },
+      {id:genId(), type:'private', title:'Rabbit Pellets (2kg)', qty:2, expiry:getExpiryDate(90), price:5, category:'animal', contact:'bunnypal@email.com', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 16) },
+      {id:genId(), type:'private', title:'Leftover Biryani (4 portions)', qty:4, expiry:getExpiryDate(1), price:0, category:'meals', contact:'host@party.com', pickup:'Pickup', extra:'Household', datePosted: new Date(Date.now() - 3600000 * 17) },
+
+      // org items (8 items per category)
+      {id:genId(), type:'org', org:'FreshMart Grocery', title:'Bakery day-old breads (20pcs)', qty:20, expiry:getExpiryDate(1), price:50, category:'bakery', contact:'freshmart@example.com', pickup:'Delivery', extra:'Retail', datePosted: new Date(Date.now() - 3600000 * 18) },
+      {id:genId(), type:'org', org:'City Canteen', title:'Bulk cooked rice (50 kg)', qty:50, expiry:getExpiryDate(1), price:0, category:'meals', contact:'canteen@city.org', pickup:'Pickup/Delivery', extra:'NGO', datePosted: new Date(Date.now() - 3600000 * 19) },
+      {id:genId(), type:'org', org:'AgriFeeds', title:'Animal feed mix (200 kg)', qty:200, expiry:getExpiryDate(10), price:15, category:'animal', contact:'feeds@agri.com', pickup:'Pickup', extra:'Supplier', datePosted: new Date(Date.now() - 3600000 * 20) },
+      {id:genId(), type:'org', org:'Sweet Treats Bakery', title:'Surplus Pastries (15 pcs)', qty:15, expiry:getExpiryDate(1), price:40, category:'bakery', contact:'bakery@sweettreats.com', pickup:'Pickup', extra:'Retail', datePosted: new Date(Date.now() - 3600000 * 21) },
+      {id:genId(), type:'org', org:'Greens Galore', title:'Slightly Bruised Bananas (5 kg)', qty:5, expiry:getExpiryDate(0), price:10, category:'fruits', contact:'info@greensgalore.com', pickup:'Pickup', extra:'Retail', datePosted: new Date(Date.now() - 3600000 * 22) },
+      {id:genId(), type:'org', org:'The Lunchbox Cafe', title:'Leftover Lasagna (10 portions)', qty:10, expiry:getExpiryDate(1), price:75, category:'meals', contact:'cafe@lunchbox.net', pickup:'Pickup', extra:'Restaurant', datePosted: new Date(Date.now() - 3600000 * 23) },
+      {id:genId(), type:'org', org:'Catering Co.', title:'Assorted Sandwich Platter', qty:1, expiry:getExpiryDate(1), price:5, category:'meals', contact:'catering@co.com', pickup:'Delivery', extra:'Catering', datePosted: new Date(Date.now() - 3600000 * 24) },
+      {id:genId(), type:'org', org:'Dairy Distributors', title:'Near-expiry Yogurt (10 containers)', qty:10, expiry:getExpiryDate(2), price:50, category:'dairy', contact:'dairy@distro.com', pickup:'Pickup', extra:'Supplier', datePosted: new Date(Date.now() - 3600000 * 25) },
+      {id:genId(), type:'org', org:'Health Foods Inc.', title:'Organic Lentils (10 bags)', qty:10, expiry:getExpiryDate(200), price:5, category:'dry', contact:'health@foods.com', pickup:'Delivery', extra:'Retail', datePosted: new Date(Date.now() - 3600000 * 26) },
+      {id:genId(), type:'org', org:'Farm Co-op', title:'Corn Silage (500kg)', qty:500, expiry:getExpiryDate(30), price:10, category:'animal', contact:'farmcoop@email.net', pickup:'Pickup', extra:'Supplier', datePosted: new Date(Date.now() - 3600000 * 27) },
+      {id:genId(), type:'org', org:'Big Buns Bakery', title:'Donut Boxes (5 boxes)', qty:5, expiry:getExpiryDate(1), price:20, category:'bakery', contact:'donuts@buns.com', pickup:'Pickup', extra:'Retail', datePosted: new Date(Date.now() - 3600000 * 28) },
+      {id:genId(), type:'org', org:'Restaurant Express', title:'Leftover Vegetable Soup (10 litres)', qty:10, expiry:getExpiryDate(0), price:10, category:'meals', contact:'express@rest.com', pickup:'Pickup', extra:'Restaurant', datePosted: new Date(Date.now() - 3600000 * 29) },
+      {id:genId(), type:'org', org:'Global Harvest', title:'Bulk Cashews (20kg)', qty:20, expiry:getExpiryDate(365), price:80, category:'dry', contact:'harvest@global.com', pickup:'Delivery', extra:'Supplier', datePosted: new Date(Date.now() - 3600000 * 30) },
+      {id:genId(), type:'org', org:'Yogurt House', title:'Greek Yogurt (30 tubs)', qty:30, expiry:getExpiryDate(2), price:50, category:'dairy', contact:'yogurthouse@email.com', pickup:'Pickup', extra:'Retail', datePosted: new Date(Date.now() - 3600000 * 31) },
+      {id:genId(), type:'org', org:'Fruit Market', title:'Watermelons (15 pieces)', qty:15, expiry:getExpiryDate(4), price:30, category:'fruits', contact:'market@fruit.com', pickup:'Pickup', extra:'Retail', datePosted: new Date(Date.now() - 3600000 * 32) },
+      {id:genId(), type:'org', org:'Organic Co-op', title:'Goat Feed (100kg)', qty:100, expiry:getExpiryDate(50), price:20, category:'animal', contact:'organic@coop.org', pickup:'Pickup', extra:'Supplier', datePosted: new Date(Date.now() - 3600000 * 33) },
+
+      // waste items (5 items per category)
+      {id:genId(), type:'waste', title:'Expired fruit peels', qty:15, expiry:getExpiryDate(-1), price:0, category:'fruits', contact:'compost@home.com', pickup:'Pickup', extra:'For Composting', datePosted: new Date() },
+      {id:genId(), type:'waste', title:'Rotten vegetables', qty:20, expiry:getExpiryDate(-1), price:0, category:'fruits', contact:'farm@compost.org', pickup:'Pickup', extra:'For Composting', datePosted: new Date() },
+      {id:genId(), type:'waste', title:'Used coffee grounds', qty:5, expiry:getExpiryDate(-2), price:0, category:'dry', contact:'local.cafe@email.com', pickup:'Pickup', extra:'For Composting', datePosted: new Date() },
+      {id:genId(), type:'waste', title:'Stale bread crumbs (1kg)', qty:1, expiry:getExpiryDate(-3), price:0, category:'bakery', contact:'baker@shop.net', pickup:'Pickup', extra:'For Composting', datePosted: new Date() },
+      {id:genId(), type:'waste', title:'Expired milk', qty:2, expiry:getExpiryDate(-4), price:0, category:'dairy', contact:'dairy@home.com', pickup:'Pickup', extra:'For Composting', datePosted: new Date() },
+      {id:genId(), type:'waste', title:'Scraps for Animal Feed', qty:10, expiry:getExpiryDate(-1), price:0, category:'animal', contact:'farm@animal.com', pickup:'Pickup', extra:'For Composting', datePosted: new Date() },
+      {id:genId(), type:'waste', title:'Spoiled Salad Mix', qty:3, expiry:getExpiryDate(-5), price:0, category:'fruits', contact:'homegarden@email.net', pickup:'Pickup', extra:'For Composting', datePosted: new Date() },
+      {id:genId(), type:'waste', title:'Expired Yogurt', qty:4, expiry:getExpiryDate(-6), price:0, category:'dairy', contact:'dairyhome@email.com', pickup:'Pickup', extra:'For Composting', datePosted: new Date() },
+    ];
+    let listings = JSON.parse(JSON.stringify(initialListings));
+    const orderedItems = []; // New array to store completed orders
+
+    // state
+    let activeTab = 'private';
+    let activeFilter = 'all';
+    let lastSearch = '';
+    let countdownIntervals = {};
+    const initialItemsToShow = 5;
+    let itemsToShow = initialItemsToShow;
+
+
+    // elements
+    const tabs = document.querySelectorAll('.tab');
+    const listingsEl = document.getElementById('listings');
+    const emptyState = document.getElementById('emptyState');
+    const filterChips = document.querySelectorAll('.filter-chip');
+    const showMoreLessBtn = document.getElementById('showMoreLessBtn');
+    
+    // Sidebar elements
+    const burger = document.getElementById('burger');
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('main');
+    const orderItemNav = document.getElementById('orderItemNav');
+    const orderedItemsContainer = document.getElementById('ordered-items-container');
+
+    // impact counters
+    const impactKg = document.getElementById('impactKg');
+    const impactTx = document.getElementById('impactTx');
+    const impactCount = document.getElementById('impactCount');
+
+    // form fields
+    const listingType = document.getElementById('listingType');
+    const inputCategory = document.getElementById('inputCategory');
+    const inputTitle = document.getElementById('inputTitle');
+    const inputQty = document.getElementById('inputQty');
+    const inputExpiry = document.getElementById('inputExpiry');
+    const inputPrice = document.getElementById('inputPrice');
+    const inputOrg = document.getElementById('inputOrg');
+    const inputDelivery = document.getElementById('inputDelivery');
+    const inputContact = document.getElementById('inputContact');
+    const orgFields = document.getElementById('orgFields');
+
+    // modal
+    const orderFormOverlay = document.getElementById('order-form-overlay');
+    const orderFormBody = document.getElementById('order-form-body');
+    const closeOrderFormBtn = document.getElementById('close-order-form');
+    
+    // success modal
+    const successModalOverlay = document.getElementById('success-modal-overlay');
+    const successMessageEl = document.getElementById('success-message');
+    const successOkBtn = document.getElementById('success-ok-btn');
+
+    // alert modal
+    const alertOverlay = document.getElementById('alert-modal-overlay');
+    const alertMessageEl = document.getElementById('alert-message');
+    const alertOkBtn = document.getElementById('alert-ok-btn');
+
+    // Load data from localStorage on page load
+    function loadDataFromStorage() {
+      const savedListings = localStorage.getItem('foodMarketplaceListings');
+      const savedOrders = localStorage.getItem('orderedItems');
+      
+      if (savedListings) {
+        const savedData = JSON.parse(savedListings);
+        // Merge with existing listings, avoiding duplicates
+        savedData.forEach(savedListing => {
+          if (!listings.find(listing => listing.id === savedListing.id)) {
+            listings.push(savedListing);
+          }
+        });
+      }
+      if (savedOrders) {
+        const savedOrderData = JSON.parse(savedOrders);
+        // Merge with existing orders, avoiding duplicates
+        savedOrderData.forEach(savedOrder => {
+          if (!orderedItems.find(order => order.id === savedOrder.id)) {
+            orderedItems.push(savedOrder);
+          }
+        });
+      }
+    }
+
+    // initial render
+    loadDataFromStorage();
+    checkAndMoveExpiredListings();
+    renderListings();
+    updateImpact();
+
+    // --------- event handlers ----------
+    // tab click
+    tabs.forEach(t=>{
+      t.addEventListener('click', ()=>{
+        tabs.forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+        activeTab = t.dataset.tab;
+        // sync right form select
+        listingType.value = activeTab;
+        toggleOrgFields();
+        // reset itemsToShow when changing tabs
+        itemsToShow = initialItemsToShow;
+        renderListings();
+      });
+    });
+
+    // filter chips
+    filterChips.forEach(ch=>{
+      ch.addEventListener('click', ()=>{
+        filterChips.forEach(c=>c.classList.remove('selected'));
+        ch.classList.add('selected');
+        activeFilter = ch.dataset.filter;
+        // reset itemsToShow when changing filters
+        itemsToShow = initialItemsToShow;
+        renderListings();
+      });
+    });
+
+    document.getElementById('clearFilters').addEventListener('click', ()=>{
+      activeFilter='all';
+      filterChips.forEach(c=>c.classList.remove('selected'));
+      document.querySelector('.filter-chip[data-filter="all"]').classList.add('selected');
+      document.getElementById('searchBox').value='';
+      lastSearch='';
+      itemsToShow = initialItemsToShow;
+      renderListings();
+    });
+
+    // search
+    document.getElementById('searchBtn').addEventListener('click', ()=>{
+      lastSearch = document.getElementById('searchBox').value.trim().toLowerCase();
+      itemsToShow = initialItemsToShow;
+      renderListings();
+      if(lastSearch==='') document.getElementById('searchBox').focus();
+    });
+    
+    // Show More / Show Less button click
+    showMoreLessBtn.addEventListener('click', () => {
+        const filtered = filterListings();
+        if (itemsToShow >= filtered.length) {
+            itemsToShow = initialItemsToShow;
+        } else {
+            itemsToShow += 10;
+        }
+        renderListings();
+    });
+    
+    // Sidebar toggle
+    burger.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      main.classList.toggle('shift');
+    });
+
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('currentUser');
+      window.location.href = "login.html";
+    });
+    
+    // listing type select toggles org fields
+    listingType.addEventListener('change', toggleOrgFields);
+    function toggleOrgFields(){
+      if(listingType.value === 'org') orgFields.style.display = 'block';
+      else orgFields.style.display = 'none';
+    }
+
+    // post listing
+    document.getElementById('postBtn').addEventListener('click', ()=>{
+      const type = listingType.value;
+      const title = inputTitle.value.trim();
+      const qty = Number(inputQty.value) || 0;
+      const expiry = inputExpiry.value || '';
+      const price = Number(inputPrice.value) || 0;
+      const category = inputCategory.value;
+      const contact = inputContact.value.trim() || 'Not provided';
+      const org = inputOrg.value || '';
+      const delivery = inputDelivery.value === 'yes' ? 'Delivery' : 'Pickup';
+
+      if(!title){ showMessage('Please provide item name.'); return; }
+      if(qty <= 0 && type !== 'waste'){ showMessage('Quantity should be greater than zero.'); return; }
+
+      const obj = {
+        id: genId(),
+        type,
+        title,
+        qty,
+        expiry,
+        price,
+        category,
+        contact,
+        org,
+        pickup: delivery,
+        thumb: categoryThumb(category, type),
+        extra: type === 'org' ? (org || 'Organization') : type === 'waste' ? 'For Composting' : 'Household',
+        datePosted: new Date()
+      };
+      
+      listings.unshift(obj);
+      // Save to localStorage for dashboard sync
+      localStorage.setItem('foodMarketplaceListings', JSON.stringify(listings));
+      console.log('Food Marketplace - Saved listings to localStorage:', listings.length);
+      // Trigger dashboard update
+      if (typeof updateDashboard === 'function') {
+        updateDashboard();
+      }
+      renderListings();
+      updateImpact();
+      // reset form
+      resetFormInputs();
+      showSuccessMessage('Listing posted — thank you! It appears in the list above.');
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', resetFormInputs);
+
+    // modal close
+    closeOrderFormBtn.addEventListener('click', closeOrderForm);
+    orderFormOverlay.addEventListener('click', (e)=>{ if(e.target===orderFormOverlay) closeOrderForm(); });
+    
+    // success modal close
+    successOkBtn.addEventListener('click', () => successModalOverlay.style.display = 'none');
+    
+    // alert modal close
+    alertOkBtn.addEventListener('click', () => alertOverlay.style.display = 'none');
+    alertOverlay.addEventListener('click', (e) => {
+        if (e.target === alertOverlay) {
+            alertOverlay.style.display = 'none';
+        }
+    });
+
+    // ---------- NEW ORDER FORM & LOGIC ----------
+    function openOrderForm(item) {
+        orderFormOverlay.style.display = 'flex';
+        const sourceName = item.type === 'private' ? 'Household' : item.org || 'Organization';
+        const totalPrice = (item.price * item.qty).toFixed(2);
+        
+        orderFormBody.innerHTML = `
+          <div class="form-header">
+              <h4>Contact / Book Listing</h4>
+          </div>
+          <form id="contact-book-form">
+              <!-- Item and Source Details -->
+              <div style="background:#f8fbf9; padding:12px; border-radius:8px; border:1px solid #eef7ef; margin-bottom: 20px;">
+                  <p style="margin:0;"><strong>Item Name:</strong> ${item.title}</p>
+                  <p style="margin:8px 0;"><strong>Quantity:</strong> ${item.qty} | <strong>Category:</strong> ${humanCategory(item.category)}</p>
+                  <p style="margin:0;"><strong>Source:</strong> ${sourceName}</p>
+                  <p style="margin:8px 0 0 0;"><strong>Source Contact:</strong> ${item.contact}</p>
+              </div>
+              
+              <!-- Your Details -->
+              <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                  <div class="form-group" style="flex:1;">
+                      <label for="buyer-name">Your Name</label>
+                      <input type="text" id="buyer-name" placeholder="Your Name" required>
+                  </div>
+                  <div class="form-group" style="flex:1;">
+                      <label for="buyer-type">Stakeholder Type</label>
+                      <select id="buyer-type" required>
+                          <option value="private">Private</option>
+                          <option value="hotel">Hotel</option>
+                          <option value="orphanage">Orphanage</option>
+                          <option value="school">School</option>
+                          <option value="animal-farm">Animal Farm</option>
+                          <option value="farmer">Farmer</option>
+                          <option value="other">Other</option>
+                      </select>
+                  </div>
+              </div>
+
+              <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                  <div class="form-group" style="flex:1;">
+                      <label for="buyer-address">Your Address</label>
+                      <input type="text" id="buyer-address" placeholder="Your Address" required>
+                  </div>
+                  <div class="form-group" style="flex:1;">
+                      <label for="buyer-contact">Your Contact</label>
+                      <input type="text" id="buyer-contact" placeholder="Your Phone/Email" required>
+                  </div>
+              </div>
+
+              <div class="form-group">
+                  <label>Payment Mode</label>
+                  <div class="payment-mode-buttons">
+                      <input type="radio" id="payment-cod" name="paymentMode" value="cod" checked>
+                      <label for="payment-cod"><i class="fas fa-money-bill-wave"></i> COD</label>
+                      
+                      <input type="radio" id="payment-upi" name="paymentMode" value="upi">
+                      <label for="payment-upi"><i class="fas fa-mobile-alt"></i> UPI</label>
+
+                      <input type="radio" id="payment-card" name="paymentMode" value="card">
+                      <label for="payment-card"><i class="fas fa-credit-card"></i> Card</label>
+                  </div>
+              </div>
+
+              <div id="payment-details-container">
+                  <div id="cod-details" class="payment-details active">
+                      <p style="margin: 0; color: var(--green);"><strong>Total Amount:</strong> ₹<span id="total-amount-cod">${totalPrice}</span></p>
+                  </div>
+                  <div id="upi-details" class="payment-details">
+                      <div class="form-group">
+                          <label for="upi-id">UPI ID</label>
+                          <input type="text" id="upi-id" placeholder="your_upi_id@bank">
+                      </div>
+                  </div>
+                  <div id="card-details" class="payment-details">
+                      <div class="card-details-grid">
+                          <div class="form-group">
+                              <label for="card-number">Card Number</label>
+                              <input type="text" id="card-number" placeholder="1234 5678 9101 1121">
+                          </div>
+                          <div class="form-group">
+                              <label for="card-name">Card Holder Name</label>
+                              <input type="text" id="card-name" placeholder="John Doe">
+                          </div>
+                          <div class="form-group">
+                              <label for="exp-date">Expiry Date</label>
+                              <input type="text" id="exp-date" placeholder="MM/YY">
+                          </div>
+                          <div class="form-group">
+                              <label for="cvv">CVV</label>
+                              <input type="text" id="cvv" placeholder="***">
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="buttons-container">
+                  <button type="reset" class="btn secondary">Reset</button>
+                  <button type="submit" id="complete-order-btn" class="btn">Complete Order</button>
+              </div>
+          </form>
+        `;
+        
+        // Add event listeners for payment mode and final buttons
+        const paymentRadios = document.querySelectorAll('input[name="paymentMode"]');
+        const codDetails = document.getElementById('cod-details');
+        const upiDetails = document.getElementById('upi-details');
+        const cardDetails = document.getElementById('card-details');
+        const form = document.getElementById('contact-book-form');
+        
+        const updatePaymentDetails = (mode) => {
+            codDetails.classList.remove('active');
+            upiDetails.classList.remove('active');
+            cardDetails.classList.remove('active');
+
+            if (mode === 'cod') {
+                codDetails.classList.add('active');
+            } else if (mode === 'upi') {
+                upiDetails.classList.add('active');
+            } else if (mode === 'card') {
+                cardDetails.classList.add('active');
+            }
+        };
+
+        paymentRadios.forEach(radio => {
+          radio.addEventListener('change', () => {
+            updatePaymentDetails(radio.value);
+          });
+        });
+        updatePaymentDetails('cod');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const selectedMode = document.querySelector('input[name="paymentMode"]:checked').value;
+            handleOrderCompletion(item, selectedMode);
+        });
+    }
+
+    function closeOrderForm() {
+        orderFormOverlay.style.display = 'none';
+    }
+
+    function handleOrderCompletion(item, paymentMode) {
+        const buyerName = document.getElementById('buyer-name').value;
+        const buyerAddress = document.getElementById('buyer-address').value;
+        const buyerContact = document.getElementById('buyer-contact').value;
+        const buyerType = document.getElementById('buyer-type').value;
+
+        if (!buyerName || !buyerAddress || !buyerContact) {
+            showMessage("Please fill in all buyer details to continue.");
+            return;
+        }
+
+        const newOrder = {
+            ...item,
+            buyerName,
+            buyerAddress,
+            buyerContact,
+            buyerType,
+            paymentMode,
+            orderDate: new Date(),
+            deliveryStatus: 0 // 0: placed, 1: shipped, 2: in transit, 3: delivered
+        };
+        orderedItems.unshift(newOrder);
+        // Save to localStorage for dashboard sync
+        localStorage.setItem('orderedItems', JSON.stringify(orderedItems));
+        // Trigger dashboard update
+        if (typeof updateDashboard === 'function') {
+          updateDashboard();
+        }
+
+        const successMessage = paymentMode === 'cod' ? 'Order Successful! Your item is on its way.' : 'Payment Successful! Your order has been placed.';
+        closeOrderForm();
+        showSuccessMessage(successMessage);
+        
+        // Simulate delivery progress
+        let deliveryStage = 0;
+        const deliveryInterval = setInterval(() => {
+            if (deliveryStage < 3) {
+                deliveryStage++;
+                newOrder.deliveryStatus = deliveryStage;
+                renderOrderedItems();
+            } else {
+                clearInterval(deliveryInterval);
+            }
+        }, 3000); // Update every 3 seconds
+
+        renderOrderedItems(); // Update the nav dropdown
+    }
+    
+    function renderOrderedItems() {
+        if (orderedItems.length === 0) {
+            orderedItemsContainer.innerHTML = 'No ordered items to show.';
+            return;
+        }
+        
+        orderedItemsContainer.innerHTML = '';
+        orderedItems.forEach(item => {
+            const sourceName = item.type === 'private' ? 'Household' : item.org || 'Organization';
+            const deliveryTime = getDeliveryTime();
+
+            const orderCard = document.createElement('div');
+            orderCard.className = 'order-item-card';
+            
+            const shippingDiagram = createShippingDiagram(item.deliveryStatus);
+            
+            orderCard.innerHTML = `
+                <h5>${item.title}</h5>
+                <p><strong>Source:</strong> ${sourceName}</p>
+                <p><strong>Qty:</strong> ${item.qty} | <strong>Price:</strong> ₹${item.price * item.qty}</p>
+                <p><strong>Est. Delivery:</strong> ${deliveryTime}</p>
+            `;
+            orderCard.appendChild(shippingDiagram);
+            orderedItemsContainer.appendChild(orderCard);
+        });
+    }
+    
+    function createShippingDiagram(status) {
+        const statuses = [
+            { icon: 'fas fa-box-open', label: 'Ordered' },
+            { icon: 'fas fa-truck-loading', label: 'Shipped' },
+            { icon: 'fas fa-shipping-fast', label: 'In Transit' },
+            { icon: 'fas fa-home', label: 'Delivered' }
+        ];
+
+        const diagram = document.createElement('div');
+        diagram.className = 'shipping-tracker';
+        
+        statuses.forEach((s, index) => {
+            const step = document.createElement('div');
+            step.className = `shipping-step ${index === status ? 'active' : ''}`;
+            if (index < status) {
+                 step.classList.add('active');
+            }
+            step.innerHTML = `<i class="${s.icon}"></i><span>${s.label}</span>`;
+            diagram.appendChild(step);
+
+            if (index < statuses.length - 1) {
+                const line = document.createElement('div');
+                line.className = `line ${index < status ? 'active' : ''}`;
+                diagram.appendChild(line);
+            }
+        });
+
+        return diagram;
+    }
+
+    function getDeliveryTime() {
+        const now = new Date();
+        const delivery = new Date(now.getTime() + 1000 * 60 * 60 * 24); // 24 hours from now
+        const hours = delivery.getHours().toString().padStart(2, '0');
+        const minutes = delivery.getMinutes().toString().padStart(2, '0');
+        return `${delivery.toDateString()} at ${hours}:${minutes}`;
+    }
+
+
+    // ---------- helper functions ----------
+    function checkAndMoveExpiredListings() {
+        const now = new Date();
+        listings.forEach(item => {
+            if (item.expiry && new Date(item.expiry).getTime() < now.getTime() && item.type !== 'waste') {
+                item.type = 'waste';
+                item.extra = 'Outdated/Expired (Moved to Waste)';
+                item.thumb = '🗑️';
+            }
+        });
+    }
+
+    function filterListings() {
+        const now = new Date();
+        let filtered = listings.filter(l => l.type === activeTab);
+      
+        // apply other filters
+        if (activeFilter !== 'all') {
+            if (activeFilter === 'new') {
+                const yesterday = new Date();
+                yesterday.setDate(now.getDate() - 1);
+                filtered = filtered.filter(l => new Date(l.datePosted) > yesterday);
+            } else if (activeFilter === 'expiring') {
+                const tomorrow = new Date();
+                tomorrow.setDate(now.getDate() + 1);
+                filtered = filtered.filter(l => l.expiry && new Date(l.expiry) < tomorrow && new Date(l.expiry) > now);
+            } else {
+                filtered = filtered.filter(l => l.category === activeFilter);
+            }
+        }
+
+        // apply search filter
+        if(lastSearch){
+            const searchTerms = lastSearch.split(' ');
+            filtered = filtered.filter(l => {
+                const text = (l.title + ' ' + (l.org||'') + ' ' + (l.extra||'') + ' ' + humanCategory(l.category)).toLowerCase();
+                return searchTerms.every(term => text.includes(term));
+            });
+        }
+        return filtered;
+    }
+
+    function renderListings(){
+      // Check for expired items before every render
+      checkAndMoveExpiredListings();
+
+      // clear existing countdowns
+      Object.keys(countdownIntervals).forEach(id => clearInterval(countdownIntervals[id]));
+      countdownIntervals = {};
+
+      listingsEl.innerHTML = '';
+      
+      const filtered = filterListings();
+      const itemsToDisplay = filtered.slice(0, itemsToShow);
+
+      if(itemsToDisplay.length === 0){
+        emptyState.style.display = 'block';
+        showMoreLessBtn.style.display = 'none';
+      } else {
+        emptyState.style.display = 'none';
+        itemsToDisplay.forEach(item=>{
+            const el = createCard(item);
+            listingsEl.appendChild(el);
+        });
+
+        // Toggle visibility and text of show more/less button
+        if (filtered.length > itemsToShow) {
+            showMoreLessBtn.style.display = 'block';
+            showMoreLessBtn.textContent = `Show More (${filtered.length - itemsToShow} remaining)`;
+        } else if (filtered.length > initialItemsToShow) {
+            showMoreLessBtn.style.display = 'block';
+            showMoreLessBtn.textContent = 'Show Less';
+        } else {
+            showMoreLessBtn.style.display = 'none';
+        }
+      }
+    }
+    
+    function createCard(item){
+      const el = document.createElement('div');
+      el.className = 'card';
+      
+      const thumb = document.createElement('div');
+      thumb.className = 'thumb';
+
+      let thumbContent;
+      if (item.type === 'private') {
+          thumbContent = `<img src="https://tylgo.mta5.unicart4u.co/image/tylgo/image/data/VRukgnFs1630949876.jpg" alt="Household Listing" onerror="this.onerror=null; this.src='https://placehold.co/88x68/eef6ee/6b7a78?text=🏠'"/>`;
+      } else if (item.type === 'org') {
+          thumbContent = `<img src="https://plus.unsplash.com/premium_photo-1683121334505-907a00cf904c?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Organization Listing" onerror="this.onerror=null; this.src='https://placehold.co/88x68/eef6ee/6b7a78?text=🏢'"/>`;
+      } else if (item.type === 'waste') {
+          thumbContent = `<img src="https://t3.ftcdn.net/jpg/05/73/57/76/360_F_573577614_3xNASp9y2eCUSXstGdXf9sKlW3ZYVyUr.jpg" alt="Waste Listing" onerror="this.onerror=null; this.src='https://placehold.co/88x68/eef6ee/6b7a78?text=🗑️'"/>`;
+      } else {
+          thumbContent = categoryThumb(item.category);
+      }
+      
+      thumb.innerHTML = thumbContent;
+
+      const body = document.createElement('div');
+      body.className = 'card-body';
+      const title = document.createElement('div');
+      title.className = 'card-title';
+      title.textContent = item.title;
+      if(item.org) title.textContent = `${item.org} — ${item.title}`;
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      const qty = document.createElement('div'); qty.textContent = `Qty: ${item.qty}`;
+      const cat = document.createElement('div'); cat.textContent = `Category: ${humanCategory(item.category)}`;
+      const pickup = document.createElement('div'); pickup.textContent = `Mode: ${item.pickup || 'Pickup'}`;
+      meta.append(qty, cat);
+      meta.append(pickup);
+      
+      // Countdown timer
+      const expiryEl = document.createElement('div');
+      expiryEl.className = 'countdown';
+      if(item.expiry) {
+        startCountdown(expiryEl, item.expiry, item.id);
+        meta.append(expiryEl);
+      }
+
+      // price / badge
+      const badge = document.createElement('div');
+      badge.className = 'badge';
+      if(item.price <= 0) { badge.classList.add('free'); badge.textContent = 'FREE / Donation' }
+      else { badge.classList.add('price'); badge.textContent = `₹ ${item.price} ` }
+
+      // actions
+      const actions = document.createElement('div');
+      actions.className = 'card-actions';
+
+      const contactBtn = document.createElement('button');
+      contactBtn.className = 'action-btn';
+      contactBtn.textContent = 'Contact / Book';
+      contactBtn.addEventListener('click', ()=>openOrderForm(item));
+
+      const more = document.createElement('div'); more.className = 'muted-2'; more.textContent = item.extra || '';
+
+      actions.append(contactBtn);
+
+      body.append(title, meta);
+
+      const right = document.createElement('div');
+      right.style.display = 'flex';
+      right.style.flexDirection = 'column';
+      right.style.alignItems = 'flex-end';
+      right.style.gap = '8px';
+      right.append(badge, more, actions);
+
+      el.append(thumb, body, right);
+      return el;
+    }
+
+    function startCountdown(el, expiryDate, id) {
+        const interval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = new Date(expiryDate).getTime() - now;
+
+            if (distance < 0) {
+                clearInterval(interval);
+                el.textContent = "Expired";
+                // Optionally trigger a re-render to move expired items
+                renderListings();
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            el.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s left`;
+        }, 1000);
+        countdownIntervals[id] = interval;
+    }
+    
+    function showMessage(message) {
+      alertMessageEl.textContent = message;
+      alertOverlay.style.display = 'flex';
+    }
+
+    function showSuccessMessage(message) {
+      successMessageEl.innerHTML = `<i class="fa fa-check-circle" style="color:var(--green); font-size: 24px;"></i><p style="margin-top: 10px;">${message}</p>`;
+      successModalOverlay.style.display = 'flex';
+    }
+
+    function categoryThumb(cat, type){
+      const map = {fruits:'🍎',dairy:'🧀',bakery:'🥖',meals:'🍲',dry:'🥫',animal:'🌾'}
+      if(type === 'waste') return '🗑️';
+      return map[cat]||'🍽️';
+    }
+    function humanCategory(cat){
+      const map = {fruits:'Fruits / Veg',dairy:'Dairy',bakery:'Bakery',meals:'Cooked Meals',dry:'Dry Foods',animal:'Animal Feed'}
+      return map[cat]||cat;
+    }
+
+    function resetFormInputs(){
+      inputTitle.value=''; inputQty.value=''; inputExpiry.value=''; inputPrice.value=''; inputOrg.value=''; inputContact.value='';
+    }
+
+    function updateImpact(){
+      const totalKg = listings.reduce((s,it)=> {
+        // if title includes 'kg' or quantity large, assume qty is kg else treat as count - still include
+        return s + (Number(it.qty) || 0);
+      },0);
+      const count = listings.length;
+      // simple heuristic: every 1 kg -> 1.5 meals
+      const meals = Math.round(totalKg * 1.5);
+      impactKg.textContent = totalKg;
+      impactTx.textContent = meals;
+      impactCount.textContent = count;
+    }
+
+    // small helpers
+    function genId(){ return 'id_' + Math.random().toString(36).slice(2,9) }
+    function getExpiryDate(daysFromNow){
+      const d = new Date();
+      d.setDate(d.getDate() + daysFromNow);
+      // set time to midnight of the expiry day
+      d.setHours(23, 59, 59, 999);
+      return d.toISOString().split('T')[0];
+    }
+
+    // allow pressing Enter in search input to search
+    document.getElementById('searchBox').addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ document.getElementById('searchBtn').click(); } });
+
+    // on load, render sample listings (already did)
+    // keep listing array as source of truth; new posts update arrays and UI
+
+  </script>
+</body>
+</html>

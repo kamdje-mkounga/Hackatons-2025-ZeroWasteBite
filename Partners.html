@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partners | Food Rescue Platform</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{display:flex;background:#f5f8fa;color:#333;min-height:100vh;}
+
+/* Sidebar */
+.sidebar{width:220px;background:#1a2b3c;color:#fff;min-height:100vh;padding:20px;position:fixed;top:0;left:-240px;transition:left 0.3s ease;z-index:200;}
+.sidebar.open{left:0;}
+.sidebar .logo{font-size:20px;font-weight:bold;margin-bottom:30px;}
+.sidebar nav a{display:block;padding:10px;margin:8px 0;color:#ddd;text-decoration:none;border-radius:6px;transition:0.3s;}
+.sidebar nav a:hover { background: #2e444e; color: #fff; }
+
+/* Main */
+.main{margin-left:0;padding:20px;width:100%;transition:margin-left 0.3s ease;}
+.main.shift{margin-left:220px;}
+
+/* Topbar */
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.topbar-left{display:flex;align-items:center;gap:10px;}
+.burger{font-size:24px;cursor:pointer;}
+.topbar h2{font-size:20px;}
+
+/* Search + Filter */
+.search-filter{display:flex;align-items:center;gap:10px; margin-top:25px; margin-bottom:20px;}
+.search-filter input{padding:6px 12px;border-radius:20px;border:1px solid #ccc;width:200px;}
+.search-filter select{padding:6px 12px;border-radius:20px;border:1px solid #ccc;}
+
+/* Pill Navbar */
+.sub-navbar{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+.sub-navbar button{padding:8px 16px;border-radius:20px;border:none;background:#e8f5e9;cursor:pointer;transition:0.3s;}
+.sub-navbar button.active,.sub-navbar button:hover{background:#3aa76d;color:#fff;}
+
+/* Category Pages */
+.category-page{display:none;}
+.category-page.active{display:block;}
+
+/* Partner Grid */
+.partners-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;}
+.partner-card{background:#fff;padding:20px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.08);cursor:pointer;transition:0.3s;}
+.partner-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+.partner-card .header{display:flex;align-items:center;gap:15px;margin-bottom:10px;}
+.partner-card img{width:60px;height:60px;border-radius:50%;object-fit:cover;}
+.partner-card h4{font-size:18px;margin-bottom:5px;color:#2d6a4f;}
+.partner-card .location{font-size:14px;color:#666;margin-bottom:8px;}
+.partner-card .description{font-size:14px;color:#555;line-height:1.4;}
+.details{display:none;margin-top:15px;padding-top:15px;border-top:1px solid #eee;font-size:13px;}
+.details a{color:#3aa76d;text-decoration:none;}
+.details a:hover{text-decoration:underline;}
+
+/* Page Title */
+.page-title{text-align:center;margin-bottom:30px;color:#2d6a4f;}
+
+@media(max-width:900px){
+  .partners-grid{grid-template-columns:1fr;}
+  .search-filter input{width:150px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">🍏 Food Rescue</div>
+  <nav>
+    <a href="Org Dashboard.html">Dashboard</a>
+    <a href="Food Marketplace.html" class="active">Food Marketplace</a>
+    <a href="recipe.html" class="active">Recipe reuse & storage Guide </a>
+    <a href="community.html">Community</a>
+ 
+    <a href="Partners.html">Partners</a>
+    <a href="blog.html">Blog</a>
+    <a href="Game.html" class="active">Gamified</a>
+    <a href="#" id="logoutBtn">Logout</a>
+  </nav>
+</aside>
+
+<!-- Main -->
+<div class="main" id="main">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <span class="burger" id="burger">☰</span>
+      <h2 id="pageTitle">All Partners in Bhubaneswar</h2>
+    </div>
+    <div class="search-filter">
+      <input type="text" id="searchInput" placeholder="🔍 Search partners...">
+      <select id="filterSelect">
+        <option value="all">All</option>
+        <option value="alpha">Alphabetical</option>
+        <option value="location">By Location</option>
+      </select>
+
+    </div>
+     <button id="connectBtn" style="padding:6px 14px; border:none; border-radius:6px; background:#3aa76d; color:#fff; cursor:pointer; margin-left:10px;">Connect</button>
+    <div class="profile">
+      <span>Profile</span>
+      <img src="https://via.placeholder.com/40" alt="User">
+    </div>
+    <!-- Connect Popup -->
+<div id="connectPopup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:500;">
+  <div style="background:#fff; padding:30px; border-radius:10px; width:300px; position:relative;">
+    <span id="closePopup" style="position:absolute; top:10px; right:15px; cursor:pointer; font-weight:bold;">&times;</span>
+    <h3>Connect with Organization</h3>
+    <form id="connectForm">
+      <label>Organization Name</label>
+      <input type="text" id="orgName" required style="width:100%; padding:6px; margin:8px 0; border-radius:6px; border:1px solid #ccc;">
+      
+      <label>Your Name</label>
+      <input type="text" id="userName" required style="width:100%; padding:6px; margin:8px 0; border-radius:6px; border:1px solid #ccc;">
+      
+      <label>Email</label>
+      <input type="email" id="userEmail" required style="width:100%; padding:6px; margin:8px 0; border-radius:6px; border:1px solid #ccc;">
+      
+      <button type="submit" style="padding:6px 12px; border:none; border-radius:6px; background:#3aa76d; color:#fff; cursor:pointer; margin-top:10px;">Submit</button>
+    </form>
+  </div>
+</div>
+
+  </header>
+
+  <!-- Pill Navbar -->
+  <div class="sub-navbar">
+    <button class="active" onclick="showCategory('ngo', this)">NGOs</button>
+    <button onclick="showCategory('hotel', this)">HOTELS & RESTAURANTS</button>
+    <button onclick="showCategory('hostel', this)">HOSTELS & CANTEENS</button>
+    <button onclick="showCategory('cattle', this)">CATTLE SHED</button>
+    <button onclick="showCategory('industry', this)">INDUSTRIES</button>
+    <button onclick="showCategory('farmer', this)">FARMERS</button>
+  </div>
+
+  <!-- NGO Example -->
+    <div id="ngo-page" class="category-page active">
+    <h2 class="page-title">NGOs in Bhubaneswar</h2>
+    <div class="partners-grid">
+      <div class="partner-card" onclick="toggleDetails('ngo1')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>KISS</h4><div class="location">📍 Patia</div></div></div><div class="description">World’s largest tribal school providing free education, food, and shelter.</div><div id="ngo1" class="details"><p>Capacity 30,000 students</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('ngo2')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>SPARSH Foundation</h4><div class="location">📍 Nayapalli</div></div></div><div class="description">Works on child welfare, healthcare, and rehabilitation services.</div><div id="ngo2" class="details"><p>Capacity 500 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('ngo3')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>AYUDA</h4><div class="location">📍 Saheed Nagar</div></div></div><div class="description">Supports underprivileged with education and livelihood programs.</div><div id="ngo3" class="details"><p>Capacity 400 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('ngo4')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>PECUC</h4><div class="location">📍 Khandagiri</div></div></div><div class="description">Focuses on children, women, and elderly welfare.</div><div id="ngo4" class="details"><p>Capacity 300 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('ngo5')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Ruchika Service Org</h4><div class="location">📍 Master Canteen</div></div></div><div class="description">Dedicated to street children’s education and rehab.</div><div id="ngo5" class="details"><p>Capacity 200 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('ngo6')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Humara Bachpan</h4><div class="location">📍 Satya Nagar</div></div></div><div class="description">Empowers children to voice urban poverty issues.</div><div id="ngo6" class="details"><p>Capacity 250 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('ngo7')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>OLS</h4><div class="location">📍 Rasulgarh</div></div></div><div class="description">Supports disabled children and adults with training.</div><div id="ngo7" class="details"><p>Capacity 300 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('ngo8')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Sankalp Foundation</h4><div class="location">📍 Jayadev Vihar</div></div></div><div class="description">Provides health and nutrition to rural/tribal communities.</div><div id="ngo8" class="details"><p>Capacity 200 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('ngo9')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Aaina</h4><div class="location">📍 Unit 9</div></div></div><div class="description">Promotes gender equality and disability rights.</div><div id="ngo9" class="details"><p>Capacity 250 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('ngo10')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Smile Foundation</h4><div class="location">📍 Patia</div></div></div><div class="description">Focuses on child nutrition and education support.</div><div id="ngo10" class="details"><p>Capacity 400 meals/day</p></div></div>
+    </div>
+  </div>
+
+  <!-- Hotels Page -->
+  <div id="hotel-page" class="category-page">
+    <h2 class="page-title">Hotels & Restaurants in Bhubaneswar</h2>
+    <div class="partners-grid">
+      <div class="partner-card" onclick="toggleDetails('h1')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Mayfair Lagoon</h4><div class="location">📍 Jayadev Vihar</div></div></div><div class="description">Luxury 5-star hotel with lagoon and fine dining.</div><div id="h1" class="details"><p>Capacity 500+ meals</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('h2')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Trident Hotel</h4><div class="location">📍 Nayapalli</div></div></div><div class="description">Premium hotel with lush gardens and restaurants.</div><div id="h2" class="details"><p>Capacity 400+ meals</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('h3')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Swosti Premium</h4><div class="location">📍 Jayadev Vihar</div></div></div><div class="description">Convention hotel with multiple dining options.</div><div id="h3" class="details"><p>Capacity 450 meals</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('h4')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Hotel Pal Heights</h4><div class="location">📍 Jayadev Vihar</div></div></div><div class="description">Hotel with rooftop restaurants and arcade.</div><div id="h4" class="details"><p>Capacity 350 meals</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('h5')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Barbeque Nation</h4><div class="location">📍 Saheed Nagar</div></div></div><div class="description">Famous for live grills and buffets.</div><div id="h5" class="details"><p>Capacity 300 meals</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('h6')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Mainland China</h4><div class="location">📍 Nayapalli</div></div></div><div class="description">Authentic Chinese cuisine restaurant.</div><div id="h6" class="details"><p>Capacity 280 meals</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('h7')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Dalma Restaurant</h4><div class="location">📍 CRP Square</div></div></div><div class="description">Specializes in Odia traditional dishes.</div><div id="h7" class="details"><p>Capacity 250 meals</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('h8')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>The Zaika</h4><div class="location">📍 KIIT Square</div></div></div><div class="description">Multi-cuisine restaurant serving continental.</div><div id="h8" class="details"><p>Capacity 200 meals</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('h9')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Hare Krishna</h4><div class="location">📍 ISKCON Temple</div></div></div><div class="description">Vegetarian restaurant offering sattvik food.</div><div id="h9" class="details"><p>Capacity 180 meals</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('h10')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>The Presidency</h4><div class="location">📍 Nayapalli</div></div></div><div class="description">Business-friendly hotel with banquet halls.</div><div id="h10" class="details"><p>Capacity 320 meals</p></div></div>
+    </div>
+  </div>
+
+  <!-- Hostels Page -->
+  <div id="hostel-page" class="category-page">
+    <h2 class="page-title">Hostels & Canteens in Bhubaneswar</h2>
+    <div class="partners-grid">
+      <div class="partner-card" onclick="toggleDetails('hs1')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Zolo Stays</h4><div class="location">📍 Patia</div></div></div><div class="description">Furnished PG rooms with meals.</div><div id="hs1" class="details"><p>Capacity 120 beds</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('hs2')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Stanza Living</h4><div class="location">📍 KIIT Area</div></div></div><div class="description">Modern PG with tech-enabled services.</div><div id="hs2" class="details"><p>Capacity 150 beds</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('hs3')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Girls Hostel KIIT</h4><div class="location">📍 Patia</div></div></div><div class="description">Safe girls hostel with WiFi and mess.</div><div id="hs3" class="details"><p>Capacity 200 beds</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('hs4')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Boys Hostel ITER</h4><div class="location">📍 Jagmohan Nagar</div></div></div><div class="description">Affordable hostel for students.</div><div id="hs4" class="details"><p>Capacity 180 beds</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('hs5')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>OYO Life</h4><div class="location">📍 Rasulgarh</div></div></div><div class="description">Managed PG with flexible rentals.</div><div id="hs5" class="details"><p>Capacity 220 beds</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('hs6')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Working Women Hostel</h4><div class="location">📍 Unit 9</div></div></div><div class="description">Govt-supported safe hostel for women.</div><div id="hs6" class="details"><p>Capacity 100 beds</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('hs7')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Techno PG</h4><div class="location">📍 Acharya Vihar</div></div></div><div class="description">Affordable PG for tech students.</div><div id="hs7" class="details"><p>Capacity 80 beds</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('hs8')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Govt Polytechnic Hostel</h4><div class="location">📍 Unit 8</div></div></div><div class="description">Hostel with mess for govt students.</div><div id="hs8" class="details"><p>Capacity 120 beds</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('hs9')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>CET Hostel</h4><div class="location">📍 Ghatikia</div></div></div><div class="description">Engineering college hostel with mess.</div><div id="hs9" class="details"><p>Capacity 250 beds</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('hs10')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>IHM Hostel</h4><div class="location">📍 VSS Nagar</div></div></div><div class="description">Hotel management students hostel.</div><div id="hs10" class="details"><p>Capacity 150 beds</p></div></div>
+    </div>
+  </div>
+
+  <!-- Cattle Shed Page -->
+  <div id="cattle-page" class="category-page">
+    <h2 class="page-title">Cattle Sheds in Bhubaneswar</h2>
+    <div class="partners-grid">
+      <div class="partner-card" onclick="toggleDetails('c1')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Gou Ashram</h4><div class="location">📍 Chandaka</div></div></div><div class="description">Shelter for abandoned cattle with organic farm.</div><div id="c1" class="details"><p>Capacity 150 cows</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('c2')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Gopal Gaushala</h4><div class="location">📍 Khandagiri</div></div></div><div class="description">Maintains rescued cows and buffaloes.</div><div id="c2" class="details"><p>Capacity 200 cows</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('c3')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Jagannath Gaushala</h4><div class="location">📍 Old Town</div></div></div><div class="description">Feeds cows with temple leftovers.</div><div id="c3" class="details"><p>Capacity 250 cows</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('c4')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Sri Krishna Shelter</h4><div class="location">📍 Patia</div></div></div><div class="description">Supports sick and stray cattle.</div><div id="c4" class="details"><p>Capacity 180 cows</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('c5')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Gou Sudhar Kendra</h4><div class="location">📍 Rasulgarh</div></div></div><div class="description">Cattle rescue and rehabilitation.</div><div id="c5" class="details"><p>Capacity 220 cows</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('c6')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Ananta Gaushala</h4><div class="location">📍 Saheed Nagar</div></div></div><div class="description">Cares for aged cows and bulls.</div><div id="c6" class="details"><p>Capacity 150 cows</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('c7')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Shree Gaushala</h4><div class="location">📍 Nayapalli</div></div></div><div class="description">Traditional cattle shelter with organic milk.</div><div id="c7" class="details"><p>Capacity 170 cows</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('c8')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>ISKCON Gaushala</h4><div class="location">📍 Nayapalli</div></div></div><div class="description">Run by ISKCON devotees for cow protection.</div><div id="c8" class="details"><p>Capacity 300 cows</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('c9')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Mahima Gou Sadan</h4><div class="location">📍 Chandrasekharpur</div></div></div><div class="description">Supports orphaned cattle with fodder.</div><div id="c9" class="details"><p>Capacity 200 cows</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('c10')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Puri Road Gaushala</h4><div class="location">📍 Puri Road</div></div></div><div class="description">Cow shelter on Puri highway.</div><div id="c10" class="details"><p>Capacity 180 cows</p></div></div>
+    </div>
+  </div>
+
+  <!-- Industries Page -->
+  <div id="industry-page" class="category-page">
+    <h2 class="page-title">Industries in Bhubaneswar</h2>
+    <div class="partners-grid">
+      <div class="partner-card" onclick="toggleDetails('i1')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>IMFA</h4><div class="location">📍 Rasulgarh</div></div></div><div class="description">Leading ferro alloys manufacturing company.</div><div id="i1" class="details"><p>CSR food programs</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('i2')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Odisha Hydro Power</h4><div class="location">📍 Saheed Nagar</div></div></div><div class="description">Power company with welfare programs.</div><div id="i2" class="details"><p>Supports food drives</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('i3')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Infosys</h4><div class="location">📍 Info City</div></div></div><div class="description">IT company with CSR on food waste reduction.</div><div id="i3" class="details"><p>Capacity 800 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('i4')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>TCS</h4><div class="location">📍 Chandrasekharpur</div></div></div><div class="description">Tata Consultancy Services CSR wing supports.</div><div id="i4" class="details"><p>Capacity 700 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('i5')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Mindtree</h4><div class="location">📍 Info Valley</div></div></div><div class="description">Tech firm promoting food redistribution.</div><div id="i5" class="details"><p>Capacity 600 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('i6')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Vedanta</h4><div class="location">📍 Kalinga Nagar</div></div></div><div class="description">CSR works for nutrition and child care.</div><div id="i6" class="details"><p>Capacity 1000 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('i7')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>NTPC</h4><div class="location">📍 Angul (branch)</div></div></div><div class="description">Energy PSU supporting community kitchens.</div><div id="i7" class="details"><p>Capacity 500 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('i8')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>IOCL</h4><div class="location">📍 Paradeep</div></div></div><div class="description">CSR wing supports poor families with food.</div><div id="i8" class="details"><p>Capacity 600 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('i9')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>NALCO</h4><div class="location">📍 Bhubaneswar HQ</div></div></div><div class="description">Public sector alumina company with CSR.</div><div id="i9" class="details"><p>Capacity 700 meals/day</p></div></div>
+      <div class="partner-card" onclick="toggleDetails('i10')"><div class="header"><img src="https://via.placeholder.com/60"><div><h4>Steel Authority of India</h4><div class="location">📍 Rourkela</div></div></div><div class="description">CSR works for health and food aid.</div><div id="i10" class="details"><p>Capacity 800 meals/day</p></div></div>
+    </div>
+  </div>
+
+  <!-- Farmers Page -->
+    <!-- Farmers Page -->
+  <div id="farmer-page" class="category-page">
+    <h2 class="page-title">Farmers in Bhubaneswar</h2>
+    <div class="partners-grid">
+      <div class="partner-card" onclick="toggleDetails('f1')">
+        <div class="header"><img src="https://via.placeholder.com/60">
+          <div><h4>Krushak Club</h4><div class="location">📍 Patia</div></div>
+        </div>
+        <div class="description">Collective of local vegetable growers supplying fresh greens.</div>
+        <div id="f1" class="details"><p>Capacity 500kg produce/day</p></div>
+      </div>
+
+      <div class="partner-card" onclick="toggleDetails('f2')">
+        <div class="header"><img src="https://via.placeholder.com/60">
+          <div><h4>Maa Durga Farmers</h4><div class="location">📍 Khandagiri</div></div>
+        </div>
+        <div class="description">Group cultivating paddy and vegetables for local markets.</div>
+        <div id="f2" class="details"><p>Capacity 400kg/day</p></div>
+      </div>
+
+      <div class="partner-card" onclick="toggleDetails('f3')">
+        <div class="header"><img src="https://via.placeholder.com/60">
+          <div><h4>Chandaka Farmers Cooperative</h4><div class="location">📍 Chandaka</div></div>
+        </div>
+        <div class="description">Producers of pulses and seasonal vegetables for nearby colonies.</div>
+        <div id="f3" class="details"><p>Capacity 350kg/day</p></div>
+      </div>
+
+      <div class="partner-card" onclick="toggleDetails('f4')">
+        <div class="header"><img src="https://via.placeholder.com/60">
+          <div><h4>Sri Jagannath Krushak Sangh</h4><div class="location">📍 Old Town</div></div>
+        </div>
+        <div class="description">Farmers collective specializing in rice and leafy vegetables.</div>
+        <div id="f4" class="details"><p>Capacity 450kg/day</p></div>
+      </div>
+
+      <div class="partner-card" onclick="toggleDetails('f5')">
+        <div class="header"><img src="https://via.placeholder.com/60">
+          <div><h4>Green Growers</h4><div class="location">📍 Nayapalli</div></div>
+        </div>
+        <div class="description">Organic vegetable and fruit producers focusing on sustainability.</div>
+        <div id="f5" class="details"><p>Capacity 300kg/day</p></div>
+      </div>
+
+      <div class="partner-card" onclick="toggleDetails('f6')">
+        <div class="header"><img src="https://via.placeholder.com/60">
+          <div><h4>Patia Farmers Market</h4><div class="location">📍 KIIT Square</div></div>
+        </div>
+        <div class="description">Community-based farmers providing seasonal fruits & grains.</div>
+        <div id="f6" class="details"><p>Capacity 350kg/day</p></div>
+      </div>
+
+      <div class="partner-card" onclick="toggleDetails('f7')">
+        <div class="header"><img src="https://via.placeholder.com/60">
+          <div><h4>Mahanadi Growers</h4><div class="location">📍 Hanspal</div></div>
+        </div>
+        <div class="description">Collective of paddy farmers located near Mahanadi belt.</div>
+        <div id="f7" class="details"><p>Capacity 600kg/day</p></div>
+      </div>
+
+      <div class="partner-card" onclick="toggleDetails('f8')">
+        <div class="header"><img src="https://via.placeholder.com/60">
+          <div><h4>Satyavihar Farmers Group</h4><div class="location">📍 Satyavihar</div></div>
+        </div>
+        <div class="description">Producers of vegetables and dairy supporting local households.</div>
+        <div id="f8" class="details"><p>Capacity 250kg/day</p></div>
+      </div>
+
+      <div class="partner-card" onclick="toggleDetails('f9')">
+        <div class="header"><img src="https://via.placeholder.com/60">
+          <div><h4>Bhubaneswar Agro Farmers</h4><div class="location">📍 Unit 8</div></div>
+        </div>
+        <div class="description">Farmer collective supplying grains to canteens and hostels.</div>
+        <div id="f9" class="details"><p>Capacity 400kg/day</p></div>
+      </div>
+
+      <div class="partner-card" onclick="toggleDetails('f10')">
+        <div class="header"><img src="https://via.placeholder.com/60">
+          <div><h4>EcoHarvest Farmers</h4><div class="location">📍 Saheed Nagar</div></div>
+        </div>
+        <div class="description">Focused on pesticide-free vegetable and fruit farming.</div>
+        <div id="f10" class="details"><p>Capacity 300kg/day</p></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Other category pages remain same... -->
+</div>
+
+<script>
+  const connectBtn = document.getElementById("connectBtn");
+const connectPopup = document.getElementById("connectPopup");
+const closePopup = document.getElementById("closePopup");
+const connectForm = document.getElementById("connectForm");
+const mainDiv = document.getElementById("main");
+
+// Show popup
+connectBtn.addEventListener("click", () => {
+    connectPopup.style.display = "flex";
+});
+
+// Close popup
+closePopup.addEventListener("click", () => {
+    connectPopup.style.display = "none";
+});
+
+// Submit form
+connectForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    
+    const orgName = document.getElementById("orgName").value;
+    const userName = document.getElementById("userName").value;
+    const userEmail = document.getElementById("userEmail").value;
+    
+    // Add submission to dashboard
+    let submissionsDiv = document.getElementById("submissions");
+    if(!submissionsDiv){
+        submissionsDiv = document.createElement("div");
+        submissionsDiv.id = "submissions";
+        submissionsDiv.style.marginTop = "20px";
+        mainDiv.appendChild(submissionsDiv);
+        const title = document.createElement("h3");
+        title.textContent = "Connect Requests:";
+        submissionsDiv.appendChild(title);
+    }
+    
+    const entry = document.createElement("p");
+    entry.textContent = `Organization: ${orgName} | Name: ${userName} | Email: ${userEmail}`;
+    submissionsDiv.appendChild(entry);
+    
+    // Close popup and reset form
+    connectPopup.style.display = "none";
+    connectForm.reset();
+});
+
+/* Sidebar toggle */
+const burger=document.getElementById("burger");
+const sidebar=document.getElementById("sidebar");
+const main=document.getElementById("main");
+burger.addEventListener("click",()=>{sidebar.classList.toggle("open");main.classList.toggle("shift");});
+
+/* Category switch */
+function showCategory(cat,btn){
+  document.querySelectorAll(".category-page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(cat+"-page").classList.add("active");
+  document.querySelectorAll(".sub-navbar button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+/* Search + Filter */
+const searchInput=document.getElementById("searchInput");
+const filterSelect=document.getElementById("filterSelect");
+
+searchInput.addEventListener("input",filterCards);
+filterSelect.addEventListener("change",filterCards);
+
+function filterCards(){
+  let search=searchInput.value.toLowerCase();
+  let filter=filterSelect.value;
+  document.querySelectorAll(".category-page.active .partner-card").forEach(card=>{
+    let name=card.dataset.name?.toLowerCase()||"";
+    let loc=card.dataset.location?.toLowerCase()||"";
+    let match=name.includes(search)||loc.includes(search);
+    card.style.display=match?"block":"none";
+  });
+
+  // simple sort
+  let grid=document.querySelector(".category-page.active .partners-grid");
+  if(filter==="alpha"){
+    [...grid.children].sort((a,b)=>a.dataset.name.localeCompare(b.dataset.name)).forEach(c=>grid.appendChild(c));
+  }
+  if(filter==="location"){
+    [...grid.children].sort((a,b)=>a.dataset.location.localeCompare(b.dataset.location)).forEach(c=>grid.appendChild(c));
+  }
+}
+</script>
+</body>
+</html>

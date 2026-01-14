@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog | Food Rescue Platform</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { display: flex; background: #f5f8fa; color: #333; }
+
+    /* Sidebar (consistent with Org Dashboard) */
+    .sidebar { width: 220px; background: #1a2b3c; color: #fff; min-height: 100vh; padding: 20px; position: fixed; top: 0; left: -240px; transition: left 0.3s ease; z-index: 200; }
+    .sidebar.open { left: 0; }
+    .sidebar .logo { font-size: 20px; font-weight: bold; margin-bottom: 30px; }
+    .sidebar nav a { display: block; padding: 10px; margin: 8px 0; color: #ddd; text-decoration: none; border-radius: 6px; transition: 0.3s; }
+    .sidebar nav a:hover { background: #2e444e; color: #fff; }
+
+    /* Main */
+    .main { margin-left: 0; padding: 20px; width: 100%; transition: margin-left 0.3s ease; }
+    .main.shift { margin-left: 220px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .topbar h2 { font-size: 20px; }
+    .burger { font-size: 24px; cursor: pointer; margin-right: 10px; }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .search { display:flex; align-items:center; gap:8px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:6px 10px; }
+    .search input { border:0; outline:0; width:240px; font-size:14px; }
+
+    /* Hero Featured */
+    .hero { position: relative; border-radius: 16px; overflow: hidden; height: 360px; box-shadow: 0 10px 24px rgba(0,0,0,0.12); background:#000; }
+    .hero img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+    .hero-overlay { position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.6)); }
+    .hero-content { position:absolute; left:24px; bottom:22px; color:#fff; max-width:70%; }
+    .hero .meta { display:flex; align-items:center; gap:10px; font-size: 12px; color:#e5e7eb; margin-top:6px; }
+    .chip { background: rgba(255,255,255,0.15); padding: 6px 10px; border-radius: 999px; font-size: 12px; }
+
+    /* Filters */
+    .filters { display:flex; justify-content: space-between; align-items:center; margin: 18px 0; }
+    .filter-chips { display:flex; gap:8px; flex-wrap: wrap; }
+    .fchip { background:#fff; border:1px solid #e5e7eb; color:#334155; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:600; }
+    .fchip.active { background:#3aa76d; color:#fff; border-color:#3aa76d; }
+    .sort select { padding:8px 10px; border-radius:8px; border:1px solid #e5e7eb; }
+
+    /* Grid */
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:18px; }
+    .card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.07); display:flex; flex-direction:column; transition: transform .2s ease, box-shadow .2s ease; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,0.12); }
+    .card img { width:100%; height:150px; object-fit:cover; }
+    .card-body { padding:12px; display:flex; flex-direction:column; gap:8px; }
+    .card h4 { margin:0; color:#111827; font-size:16px; }
+    .card .excerpt { color:#475569; font-size:13px; line-height:1.5; }
+    .card .meta { color:#64748b; font-size:12px; display:flex; justify-content:space-between; align-items:center; }
+
+    /* Modal */
+    .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:300; }
+    .modal { background:#fff; width:560px; max-width:92%; border-radius:12px; padding:18px; box-shadow:0 10px 28px rgba(0,0,0,0.2); }
+    .modal h3 { margin-bottom:10px; }
+    .form-row { display:flex; flex-direction:column; gap:6px; margin-bottom:10px; }
+    .form-row input, .form-row textarea, .form-row select { padding:10px; border:1px solid #e5e7eb; border-radius:8px; font-size:14px; }
+    .actions { display:flex; justify-content:flex-end; gap:8px; margin-top:10px; }
+    .btn { background:#3aa76d; color:#fff; border:0; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:600; }
+    .btn.secondary { background:#eef2f7; color:#334155; }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">🍏 Food Rescue</div>
+    <nav>
+      <a href="Org Dashboard.html">Dashboard</a>
+      <a href="Food Marketplace.html" class="active">Food Marketplace</a>
+      <a href="recipe.html" class="active">Recipe reuse & storage Guide </a>
+      <a href="community.html">Community</a>
+   
+      <a href="Partners.html">Partners</a>
+      <a href="blog.html">Blog</a>
+      <a href="Game.html" class="active">Gamified</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main" id="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="burger" id="burger">☰</span>
+        <h2>Blog</h2>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="search"><i class="fa fa-search" style="color:#94a3b8"></i><input id="searchBox" placeholder="Search posts or author"></div>
+        <button class="btn" id="openPost">New Post</button>
+      </div>
+    </header>
+
+    <!-- Featured Hero -->
+    <section class="hero" id="hero">
+      <img id="heroImg" src="blog.avif" alt="Featured" onerror="this.onerror=null; this.src='blog.avif';">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="chip" id="heroCategory">Destination</div>
+        <h1 id="heroTitle" style="font-size:28px; line-height:1.2; margin-top:6px;">Exploring the Wonders of Food Rescue</h1>
+        <div class="meta"><span id="heroAuthor">Food Rescue Team</span><span>•</span><span id="heroDate">Today</span><span>•</span><span id="heroRead">5 mins read</span></div>
+      </div>
+    </section>
+
+    <!-- Filters -->
+    <div class="filters">
+      <div class="filter-chips" id="categories">
+        <span class="fchip active" data-cat="all">All</span>
+        <span class="fchip" data-cat="Destination">Destination</span>
+        <span class="fchip" data-cat="Culinary">Culinary</span>
+        <span class="fchip" data-cat="Lifestyle">Lifestyle</span>
+        <span class="fchip" data-cat="Tips & Hacks">Tips & Hacks</span>
+      </div>
+      <div class="sort">
+        <select id="sortSelect">
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <section class="grid" id="grid"></section>
+  </div>
+
+  <!-- New Post Modal -->
+  <div class="overlay" id="postOverlay">
+    <div class="modal">
+      <h3>New Blog Post</h3>
+      <div class="form-row">
+        <label>Name</label>
+        <input id="postAuthor" placeholder="Your name" />
+      </div>
+      <div class="form-row">
+        <label>Title</label>
+        <input id="postTitle" placeholder="Post title" />
+      </div>
+      <div class="form-row">
+        <label>Image</label>
+        <input id="postImage" type="file" accept="image/*" />
+      </div>
+      <div class="form-row">
+        <label>Category</label>
+        <select id="postCategory">
+          <option>Destination</option>
+          <option>Culinary</option>
+          <option>Lifestyle</option>
+          <option>Tips & Hacks</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Content</label>
+        <textarea id="postText" rows="6" placeholder="Write your story..."></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn secondary" id="cancelPost">Cancel</button>
+        <button class="btn" id="savePost">Publish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Post Modal -->
+  <div class="overlay" id="viewOverlay">
+    <div class="modal" style="max-width:820px; width:820px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <h3 id="viewTitle" style="margin:0;">Title</h3>
+        <button class="btn secondary" id="closeView">Close</button>
+      </div>
+      <div style="color:#6b7280; font-size:13px; margin-bottom:8px;" id="viewMeta">Meta</div>
+      <img id="viewImg" alt="cover" style="width:100%; height:300px; object-fit:cover; border-radius:10px; margin-bottom:10px;"/>
+      <div id="viewText" style="white-space:pre-wrap; line-height:1.6; color:#374151;"></div>
+    </div>
+  </div>
+
+  <script>
+    // Sidebar toggle and logout
+    const burger = document.getElementById('burger');
+    const sidebar = document.getElementById('sidebar');
+    const mainEl = document.getElementById('main');
+    burger.addEventListener('click', ()=>{ sidebar.classList.toggle('open'); mainEl.classList.toggle('shift'); });
+    document.getElementById('logoutBtn').addEventListener('click', (e)=>{ e.preventDefault(); localStorage.removeItem('currentUser'); window.location.href='login.html'; });
+
+    // Elements
+    const grid = document.getElementById('grid');
+    const catRow = document.getElementById('categories');
+    const sortSelect = document.getElementById('sortSelect');
+    const postOverlay = document.getElementById('postOverlay');
+    const openPost = document.getElementById('openPost');
+    const searchBox = document.getElementById('searchBox');
+    const cancelPost = document.getElementById('cancelPost');
+    const savePost = document.getElementById('savePost');
+
+    const heroImg = document.getElementById('heroImg');
+    const heroTitle = document.getElementById('heroTitle');
+    const heroAuthor = document.getElementById('heroAuthor');
+    const heroDate = document.getElementById('heroDate');
+    const heroRead = document.getElementById('heroRead');
+    const heroCategory = document.getElementById('heroCategory');
+
+    // Storage helpers
+    function getBlogs(){ return JSON.parse(localStorage.getItem('blogs')||'[]'); }
+    function setBlogs(arr){ localStorage.setItem('blogs', JSON.stringify(arr)); }
+
+    // Seed sample if empty
+    if(getBlogs().length===0){
+      setBlogs([
+        {id:genId(), author:'Food Rescue Team', title:'Exploring the Wonders of Food Rescue', img:'https://images.unsplash.com/photo-1604908176997-4316511b1372?q=80&w=1600&auto=format&fit=crop', text:'Across cities and villages, surplus food travels a second life. We explore how households, restaurants, and farms connect through our marketplace to reduce waste and nourish communities. From safe handling to last‑mile delivery, here are practical ways to join the movement and measure real impact.', cat:'Destination', date:Date.now()-86400000*1},
+        {id:genId(), author:'Green Earth NGO', title:'Culinary ideas for rescued produce', img:'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=1200', text:'Rescued produce can be stunning on a plate. Try quick pickles for tired cucumbers, a roasted medley for soft tomatoes, and herbed croutons from day‑old bread. These recipes are scalable for community kitchens and perfect for nutrition with minimal cost.', cat:'Culinary', date:Date.now()-86400000*3},
+        {id:genId(), author:'EcoHostels', title:'Lifestyle of low-waste kitchens', img:'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=1200', text:'Low‑waste kitchens start with planning: smart shopping lists, FIFO storage, and clear labels. We share our weekly routine, storage tips for bulk grains, and how to compost scraps or route them as animal feed with local partners.', cat:'Lifestyle', date:Date.now()-86400000*6},
+        {id:genId(), author:'Happy Meals', title:'Tips for volunteer coordination', img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200', text:'Volunteers are the heartbeat of food rescue. Define roles, keep a simple rota, and standardize hand‑off checklists. Use group chats for live updates and create a quick incident log to learn after each drive.', cat:'Tips & Hacks', date:Date.now()-86400000*10}
+      ]);
+    }
+
+    // Render
+    let activeCat = 'all';
+    function render(){
+      let list = [...getBlogs()];
+      // sort
+      const sort = sortSelect.value;
+      list.sort((a,b)=> sort==='newest' ? b.date-a.date : a.date-b.date);
+      // filter
+      if(activeCat!=='all') list = list.filter(b=>b.cat===activeCat);
+      // search filter
+      const q = (searchBox?.value||'').trim().toLowerCase();
+      if(q){ list = list.filter(b => (b.title+' '+b.author+' '+b.text).toLowerCase().includes(q)); }
+      // hero = first item
+      if(list.length){
+        const h = list[0];
+        heroImg.src = h.img; heroTitle.textContent = h.title; heroAuthor.textContent = h.author; heroDate.textContent = new Date(h.date).toDateString(); heroRead.textContent = '5 mins read'; heroCategory.textContent = h.cat;
+      }
+      // grid cards
+      grid.innerHTML='';
+      list.forEach((b,idx)=>{
+        if(idx===0) return; // skip hero
+        const el = document.createElement('article');
+        el.className='card';
+        el.innerHTML = `
+          <img src="${b.img}" alt="${b.title}">
+          <div class="card-body">
+            <div class="chip">${b.cat}</div>
+            <h4>${b.title}</h4>
+            <div class="excerpt">${escapeHtml(b.text).slice(0,120)}...</div>
+            <div class="meta"><span>${b.author}</span><span>${new Date(b.date).toDateString()}</span></div>
+          </div>`;
+        el.addEventListener('click', ()=> openView(b));
+        grid.appendChild(el);
+      });
+    }
+
+    // Category clicks
+    catRow.addEventListener('click', (e)=>{
+      if(!e.target.classList.contains('fchip')) return;
+      [...catRow.children].forEach(c=>c.classList.remove('active'));
+      e.target.classList.add('active');
+      activeCat = e.target.dataset.cat;
+      render();
+    });
+    sortSelect.addEventListener('change', render);
+    if(searchBox){ searchBox.addEventListener('input', ()=>{ render(); }); }
+
+    // Modal controls
+    openPost.addEventListener('click', ()=> postOverlay.style.display = 'flex');
+    cancelPost.addEventListener('click', ()=> postOverlay.style.display = 'none');
+    postOverlay.addEventListener('click', (e)=>{ if(e.target===postOverlay) postOverlay.style.display='none'; });
+
+    // Save post
+    savePost.addEventListener('click', ()=>{
+      const author = document.getElementById('postAuthor').value.trim();
+      const title = document.getElementById('postTitle').value.trim();
+      const imgFile = document.getElementById('postImage').files[0];
+      const cat = document.getElementById('postCategory').value;
+      const text = document.getElementById('postText').value.trim();
+      if(!author || !title || !text){ alert('Please fill name, title and content.'); return; }
+      const done = (imgSrc)=>{
+        const blogs = getBlogs();
+        blogs.unshift({ id:genId(), author, title, img: imgSrc, text, cat, date: Date.now() });
+        setBlogs(blogs);
+        postOverlay.style.display='none';
+        document.getElementById('postAuthor').value='';
+        document.getElementById('postTitle').value='';
+        document.getElementById('postImage').value='';
+        document.getElementById('postText').value='';
+        render();
+      };
+      if(imgFile){
+        const reader = new FileReader();
+        reader.onload = ()=> done(reader.result);
+        reader.readAsDataURL(imgFile);
+      } else {
+        done('https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=1200');
+      }
+    });
+
+    // View modal logic
+    const viewOverlay = document.getElementById('viewOverlay');
+    const closeView = document.getElementById('closeView');
+    closeView.addEventListener('click', ()=> viewOverlay.style.display='none');
+    viewOverlay.addEventListener('click', (e)=>{ if(e.target===viewOverlay) viewOverlay.style.display='none'; });
+    function openView(b){
+      document.getElementById('viewTitle').textContent = b.title;
+      document.getElementById('viewMeta').textContent = `${b.author} • ${new Date(b.date).toDateString()} • ${b.cat}`;
+      document.getElementById('viewImg').src = b.img;
+      document.getElementById('viewText').textContent = b.text;
+      viewOverlay.style.display = 'flex';
+    }
+
+    // Open view from hero
+    document.getElementById('hero').addEventListener('click', ()=>{
+      const list = [...getBlogs()].sort((a,b)=> sortSelect.value==='newest' ? b.date-a.date : a.date-b.date);
+      const h = activeCat==='all' ? list[0] : list.find(x=>x.cat===activeCat) || list[0];
+      if(h) openView(h);
+    });
+
+    function escapeHtml(s){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+    function genId(){ return 'b_'+Math.random().toString(36).slice(2,9); }
+
+    render();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Private Dashboard — Waste-to-Value NGO</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLpQpL4hUoXF1J2o4x5i5r5Lp2gP8pW5f+3F5o8r7lG0gLwLgH7p6wJ1H3B8wR5Qp+rWc+g8p5/oF+mQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+  /* Notification Sidebar Styles */
+.notif-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 340px;
+    height: 100vh;
+    background: #f8f9fa;
+    color: #333;
+    box-shadow: -2px 0 16px rgba(0,0,0,0.1);
+    z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    transition: transform 0.2s;
+    border-left: 1px solid #dee2e6;
+    border-radius: 0 0 0 12px;
+}
+.notif-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    background: #f1f3f5;
+}
+.notif-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    color: #333;
+}
+.notif-sidebar .close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+      cursor: pointer;
+    color: #6c757d;
+    transition: color 0.2s;
+}
+.notif-sidebar .close:hover {
+    color: #212529;
+}
+:root {
+    --bg: #f8f9fa;
+    --muted: #6c757d;
+    --glass: rgba(255, 255, 255, 0.8);
+    --card-radius: 12px;
+    --gap: 14px;
+    color-scheme: light;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+}
+
+* {
+    box-sizing: border-box
+}
+
+body {
+    margin: 0;
+    background: #f8f9fa;
+    color: #212529;
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.35;
+}
+
+/* container */
+.app {
+    max-width: 1200px;
+    margin: 18px auto;
+    padding: 16px
+}
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    padding: 12px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.brand h1 {
+    margin: 0;
+    font-size: 18px
+}
+
+.brand small {
+    color: var(--muted);
+    display: block;
+    margin-top: 4px
+}
+
+.btn {
+    border: 0;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 600;
+      cursor: pointer;
+    background: transparent;
+    color: inherit
+}
+
+.btn.ghost {
+    border: 1px solid #dee2e6;
+    color: #495057;
+}
+
+.btn.primary {
+    background: linear-gradient(90deg, #059669, #10b981);
+    color: white
+}
+
+.badge {
+    background: #ef4444;
+    padding: 2px 6px;
+    border-radius: 999px;
+    margin-left: 8px;
+    font-size: 12px;
+    color: white;
+}
+
+/* grid layout */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: var(--gap);
+    margin-top: 16px;
+}
+
+.panel {
+    background: #ffffff;
+    border-radius: var(--card-radius);
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.cards {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px
+}
+
+.card.stat {
+    flex: 1 1 150px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid #e9ecef;
+}
+
+.card.stat .label {
+    font-size: 12px;
+    color: var(--muted)
+}
+
+.card.stat .value {
+    font-size: 20px;
+    font-weight: 800;
+    margin-top: 6px;
+    color: #212529;
+}
+
+/* blocks */
+.panel-block {
+    margin-top: 12px;
+    padding: 9px;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+
+.impact-grid {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px
+}
+
+.impact-card {
+    flex: 1 1 120px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+}
+
+.imp-label {
+    color: var(--muted);
+    font-size: 12px
+}
+
+.imp-value {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 6px;
+    color: #212529;
+}
+
+/* submissions */
+.submissions-list {
+    min-height: 80px
+}
+
+.sub-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 8px 0;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+}
+
+.sub-left {
+    display: flex;
+    gap: 10px;
+    align-items: center
+}
+
+.sub-info {
+    font-size: 13px;
+    color: #212529;
+}
+
+.sub-time {
+    color: var(--muted);
+    font-size: 12px
+}
+
+.sub-actions button {
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 0;
+    cursor: pointer
+}
+
+.sub-actions button.cancel {
+    background: #ef4444;
+    color: white
+}
+
+/* tips */
+.tips-box {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    color: var(--muted);
+    border: 1px solid #e9ecef;
+}
+
+.tip-list {
+    color: var(--muted);
+    padding-left: 18px
+}
+
+/* quick actions */
+.actions-grid {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap
+}
+
+.actions-grid .btn {
+    flex: 1 1 120px
+}
+
+/* footer */
+.footer {
+    text-align: center;
+    padding: 12px;
+    color: var(--muted);
+    margin-top: 12px
+}
+
+/* modal */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+    justify-content: center;
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .18s
+}
+
+.modal[aria-hidden="false"] {
+    opacity: 1;
+    pointer-events: auto
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 12px;
+    width: 420px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #212529;
+}
+
+.modal-content label {
+    display: block;
+    margin: 8px 0;
+    color: #495057;
+}
+
+.modal-content input,
+.modal-content select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    background: #ffffff;
+    color: #212529;
+}
+
+.modal .close {
+    position: absolute;
+    right: 22px;
+    top: 18px;
+    background: transparent;
+    border: 0;
+    color: #6c757d;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* notifications */
+.notif-list {
+    max-height: 220px;
+    overflow: auto
+}
+
+.notif-item {
+    padding: 8px;
+    border-radius: 8px;
+    margin: 6px 0;
+    background: #ffffff;
+    font-size: 13px;
+    border: 1px solid #e9ecef;
+    color: #212529;
+}
+
+/* small helpers */
+.muted {
+    color: var(--muted)
+}
+
+.small {
+    font-size: 12px
+}
+
+/* responsive */
+@media (max-width:1000px) {
+    .grid {
+        grid-template-columns: 1fr
+    }
+
+    .impact {
+        order: 2
+    }
+
+    .submissions {
+        order: 3
+    }
+}
+
+@media (max-width:520px) {
+    .modal-content {
+        width: 92%
+    }
+
+    .cards {
+        flex-direction: column
+    }
+
+    .brand h1 {
+        font-size: 16px
+    }
+}
+.quick-btn {
+  display: inline-block;
+  margin: 6px 4px;
+  padding: 10px 14px;
+  background: #4CAF50;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+/* Sidebar Styles */
+.page-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+.sidebar {
+  width: 240px;
+  background: #2d6a4f;
+  color: #fff;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  overflow: hidden;
+  position: fixed;
+  height: 100vh;
+  z-index: 100;
+  transform: translateX(-100%);
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar h2 {
+  text-align: center;
+  padding: 20px 0;
+  font-size: 20px;
+  background: #24563e;
+  transition: font-size 0.3s;
+  margin: 0;
+}
+
+.sidebar ul { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0;
+}
+
+.sidebar ul li {
+  padding: 15px 20px;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar ul li:hover { 
+  background: #1e4d37; 
+}
+
+.sidebar-icon {
+  font-size: 18px;
+  min-width: 20px;
+}
+
+.sidebar-text {
+  transition: opacity 0.3s;
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #f8f9fa;
+}
+
+/* Topbar */
+.topbar {
+  height: 60px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-bottom: 1px solid #e9ecef;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.menu-btn {
+  font-size: 24px;
+  cursor: pointer;
+  color: #2d6a4f;
+  transition: color 0.3s;
+}
+
+.menu-btn:hover {
+  color: #1e4d37;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.logo-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #2d6a4f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2d406a;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.avatar:hover {
+  transform: scale(1.1);
+}
+
+/* Chart adjustments for light mode */
+canvas {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 91px;
+}
+
+.sidebar .logo { 
+  font-size: 20px; 
+  font-weight: bold; 
+  margin-bottom: 30px; 
+  padding: 20px;
+  text-align: center;
+  background: #171e2b;
+
+
+}
+
+.sidebar {
+    width: 240px;
+    background: #1a2b3c;
+    color: #fff;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+    position: fixed;
+    height: 100vh;
+    z-index: 100;
+    transform: translateX(-100%);}
+.sidebar nav a { 
+  display: block; 
+  padding: 15px 20px; 
+  margin: 8px 0; 
+  color: #ddd; 
+  text-decoration: none; 
+  border-radius: 6px; 
+  transition: 0.3s; 
+}
+.sidebar nav a:hover { background: #2e444e; color: #fff; }
+
+/* Overlay for when sidebar is open */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  display: none;
+}
+
+.overlay.active {
+  display: block;
+}
+
+  </style>
+</head>
+
+<body>
+  <!-- Overlay for sidebar -->
+  <div class="overlay" id="overlay"></div>
+  
+  <div class="page-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="logo"> ZeroWasteBite</div>
+      <nav>
+        <a href="Org Dashboard.html">Dashboard</a>
+        <a href="Food Marketplace.html" class="active">Food Marketplace</a>
+        <a href="recipe.html" class="active">Recipe reuse & storage Guide </a>
+        <a href="community.html">Community</a>
+     
+        <a href="Partners.html">Partners</a>
+        <a href="blog.html">Blog</a>
+        <a href="Game.html" class="active">Gamified</a>
+        <a href="login.html" id="logoutBtn">Logout</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="menu-btn" id="menuBtn">☰</span>
+          <div class="logo" onclick="location.href='HomePage.html'">
+            <!-- <div class="logo-circle"><img src="logo.png" style="width:50px; height:50px;"></div> -->
+            <span style="font-size: 20px; font-weight: bold;">Private Dashboard</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button id="notifBtn" class="btn ghost">Notifications <span id="notifCount" class="badge">0</span></button>
+          <button id="openAddBtn" class="btn primary">+ Add Waste</button>
+          <!-- <div class="avatar"></div> -->
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <div class="app">
+
+    <main class="grid">
+      <!-- LEFT: metrics + charts -->
+      <section class="panel summary">
+        <div class="cards">
+          <div class="card stat yellow">
+            <div class="label">Total Contributions</div>
+            <div class="value" id="stat-contrib">0</div>
+          </div>
+          <div class="card stat pink">
+            <div class="label">Total Waste Diverted (kg)</div>
+            <div class="value" id="stat-waste">0</div>
+          </div>
+          <div class="card stat blue">
+            <div class="label">Animals Fed</div>
+            <div class="value" id="stat-animals">0</div>
+          </div>
+          <div class="card stat purple">
+            <div class="label">Reward Points</div>
+            <div class="value" id="stat-points">0</div>
+          </div>
+  </div>
+
+        <div class="panel-block">
+          <h3>Waste by Status (example)</h3>
+          <canvas id="statusPie" height="180"></canvas>
+    </div>
+
+        <div class="panel-block">
+          <h3>Waste by Type</h3>
+          <canvas id="typeDonut" height="180"></canvas>
+        </div>
+
+        <div class="panel-block">
+          <h3>Waste Sent to Recipients</h3>
+          <canvas id="recipientBar" height="180"></canvas>
+        </div>
+      </section>
+
+      <!-- RIGHT: impact, tips, quick actions -->
+      <section class="panel impact">
+        <div class="panel-block">
+          <h3>Impact Analysis (live)</h3>
+          <div class="impact-grid">
+            <div class="impact-card">
+              <div class="imp-label">Animals Fed</div>
+              <div class="imp-value" id="imp-animals">0</div>
+            </div>
+            <div class="impact-card">
+              <div class="imp-label">Waste Diverted (kg)</div>
+              <div class="imp-value" id="imp-waste">0</div>
+            </div>
+            <div class="impact-card">
+              <div class="imp-label">CO₂ Reduced (kg)</div>
+              <div class="imp-value" id="imp-co2">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h3>Personal Impact Summary</h3>
+          <p id="personalSummary">You haven't made a contribution yet.</p>
+        </div>
+
+        <div class="panel-block tips">
+          <h3>Educational Tips</h3>
+          <div id="tipsBox" class="tips-box">Tip will rotate here...</div>
+          <ul class="tip-list">
+            <!-- Educational Tips -->
+            <li>Separate wet and dry waste at source to increase recovery value.</li>
+            <li>Cool leftover cooked food before donation to keep it fresh for animals.</li>
+            <li>Store perishable food in sealed containers to prevent spoilage.</li>
+            <li>Plan meals wisely to reduce household food waste.</li>
+            <li>Plan meals to reduce food waste — small changes add up.</li>
+             <li>Support local cattle owners by donating regularly.</li>
+            <li>Composting kitchen scraps helps enrich soil instead of landfills.</li>
+            <li>Encourage neighbors and friends to contribute waste donations.</li>
+            <li>Every 5 kg waste diverted prevents ~2.5 kg CO₂ emissions.</li>
+            <li>Collect bakery and fruit leftovers separately for better redistribution.</li>
+
+            <h3>Rewards</h3>
+            <li>🏅 Bronze Contributor: 5 donations in a month.</li>
+            <li>🥈 Silver Contributor: 20 donations overall.</li>
+            <li>🥇 Gold Contributor: 50+ donations and consistent participation.</li>
+            <li>🌟 Eco-Champion: 100+ kg waste diverted.</li>
+            <li>💚 Community Star: Share your impact with friends to earn bonus points.</li>
+
+
+            <div class="panel-block quick-actions">
+  <h3>Quick Actions</h3>
+
+  <!-- Navigation Buttons -->
+  <a href="Partners.html" class="quick-btn" id="browseIndustries">🏭 Browse Industries</a>
+  <a href="Partners.html" class="quick-btn" id="browseOwners">🐄 Browse Cattle Owners</a>
+  <a href="Partners.html" class="quick-btn" id="myContributions">🏢 Browse Organizations</a>
+
+  <!-- Support Links -->
+  <div class="support-links">
+    <a href="help.html">❓ Help</a> |
+    <a href="contact.html">📩 Contact</a>
+        </div>
+      </div>
+
+
+            <!-- Submitted Donations Section (moved here from below 'Waste Sent to Recipients') -->
+            <div class="panel-block submitted-donations">
+              <h3>Your small contribution can make a big difference in someone's life</h3>
+              <div id="donationList">
+                <p>No donations yet. Click "Add Waste Donation" to submit.</p>
+              </div>
+      </div>
+
+
+      </section>
+
+      <!-- BOTTOM: submissions & notifications -->
+      <section class="panel submissions">
+        <div class="panel-block">
+          <h3>Submitted Waste Donations</h3>
+          <div id="submissionsList" class="submissions-list">
+            <p class="muted">No submissions yet.</p>
+          </div>
+        </div>
+
+  <!-- Notification sidebar moved to end of body for full height -->
+      </section>
+    </main>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Sidebar (now global, always fills screen height) -->
+  <div class="notif-sidebar" id="notifPanel" style="display:none;">
+    <div class="notif-header">
+      <h3>Notifications</h3>
+      <button id="closeNotifBtn" class="close" title="Close">&times;</button>
+    </div>
+    <div id="notifList" class="notif-list"></div>
+        </div>
+
+  <!-- Add Waste Modal -->
+  <div id="addModal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <button class="close" id="closeAddBtn" title="Close">&times;</button>
+      <h2>Add Waste Donation</h2>
+      <form id="addForm">
+        <label>
+          Waste Type
+          <select id="wasteType" required>
+            <option value="Cooked Food">Cooked Food</option>
+            <option value="Vegetable Scraps">Vegetable Scraps</option>
+            <option value="Fruit">Fruit</option>
+            <option value="Bakery">Bakery</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+
+        <label>
+          Quantity (kg)
+          <input type="number" id="quantity" min="0.1" step="0.1" required />
+        </label>
+
+        <label>
+          Recipient (Cattle shed / Owner)
+          <input type="text" id="recipient" placeholder="e.g., Cattle Shed A" required />
+        </label>
+
+        <label>
+          Notes
+          <input type="text" id="notes" placeholder="Extra details (optional)" />
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Submit</button>
+          <button type="button" class="btn ghost" id="cancelModal">Cancel</button>
+        </div>
+      </form>
+      <p class="muted small">After submit, the entry appears below with a <strong>Cancel</strong> option active for 3
+        hours.</p>
+    </div>
+  </div>
+
+  <script>
+    /* NGO Private Dashboard
+   - submissions persist in localStorage
+   - cancel available for 3 hours from createdAt
+   - charts update live
+*/
+
+const STORAGE_KEY = 'ngo_dashboard_submissions_v1';
+const CANCEL_WINDOW_MS = 3 * 60 * 60 * 1000; // 3 hours
+
+// Sidebar toggle functionality
+const sidebar = document.getElementById('sidebar');
+const menuBtn = document.getElementById('menuBtn');
+const overlay = document.getElementById('overlay');
+
+function toggleSidebar() {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('active');
+}
+
+menuBtn.addEventListener('click', toggleSidebar);
+overlay.addEventListener('click', toggleSidebar);
+
+// Close sidebar when clicking on a link
+document.querySelectorAll('.sidebar nav a').forEach(link => {
+  link.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Elements
+  const addModal = document.getElementById('addModal');
+  const openAddBtn = document.getElementById('openAddBtn');
+  const closeAddBtn = document.getElementById('closeAddBtn');
+  const cancelModal = document.getElementById('cancelModal');
+  const addForm = document.getElementById('addForm');
+
+  const submissionsList = document.getElementById('submissionsList');
+  const notifBtn = document.getElementById('notifBtn');
+  const notifPanel = document.getElementById('notifPanel');
+  const notifList = document.getElementById('notifList');
+  const notifCount = document.getElementById('notifCount');
+
+  const statContrib = document.getElementById('stat-contrib');
+  const statWaste = document.getElementById('stat-waste');
+  const statAnimals = document.getElementById('stat-animals');
+  const statPoints = document.getElementById('stat-points');
+
+  const impAnimalsEl = document.getElementById('imp-animals');
+  const impWasteEl = document.getElementById('imp-waste');
+  const impCo2El = document.getElementById('imp-co2');
+  const personalSummary = document.getElementById('personalSummary');
+
+  const tipsBox = document.getElementById('tipsBox');
+
+  // state
+  let submissions = loadSubmissions();
+  let notifications = JSON.parse(localStorage.getItem('ngo_notifications') || '[]');
+
+  // UI - modal
+  openAddBtn.addEventListener('click', ()=> addModal.setAttribute('aria-hidden','false'));
+  closeAddBtn.addEventListener('click', ()=> addModal.setAttribute('aria-hidden','true'));
+  cancelModal.addEventListener('click', ()=> addModal.setAttribute('aria-hidden','true'));
+
+  // Notifications toggle
+  notifBtn.addEventListener('click', () => {
+    notifPanel.style.display = 'block';
+    renderNotifications();
+  });
+
+  // Close notification sidebar
+  const closeNotifBtn = document.getElementById('closeNotifBtn');
+  if (closeNotifBtn) {
+    closeNotifBtn.addEventListener('click', () => {
+      notifPanel.style.display = 'none';
+    });
+  }
+
+  function pushNotification(text){
+    const n = {text, time: Date.now()};
+    notifications.unshift(n);
+    localStorage.setItem('ngo_notifications', JSON.stringify(notifications.slice(0,50)));
+    renderNotifications();
+  }
+  function renderNotifications(){
+    notifCount.textContent = notifications.length;
+    notifList.innerHTML = notifications.length ? notifications.map(n=>`<div class="notif-item">${n.text} <div class="small muted">${new Date(n.time).toLocaleString()}</div></div>`).join('') : '<p class="muted">No notifications</p>';
+  }
+
+  // Impact math (simple example conversions)
+  function computeImpactFromSubmissions(list){
+    const totalKg = list.reduce((s, x)=> s + Number(x.quantity), 0);
+    const animals = list.reduce((s, x) => s + Math.max(1, Math.round(x.quantity/5)), 0);
+    const co2 = Number((totalKg * 0.5).toFixed(2)); // example factor
+    return {totalKg, animals, co2};
+  }
+
+  // Render metrics
+  function updateMetrics(){
+    const {totalKg, animals, co2} = computeImpactFromSubmissions(submissions);
+    statContrib.textContent = submissions.length;
+    statWaste.textContent = totalKg.toFixed(1);
+    statAnimals.textContent = animals;
+    statPoints.textContent = Math.floor(totalKg * 2); // 2 points per kg example
+
+    impAnimalsEl.textContent = animals;
+    impWasteEl.textContent = totalKg.toFixed(1);
+    impCo2El.textContent = co2.toFixed(2);
+    personalSummary.textContent = `You've contributed ${submissions.length} time(s), diverted ${totalKg.toFixed(1)} kg of waste, feeding approx ${animals} animal(s) and reducing ${co2.toFixed(2)} kg CO₂.`;
+  }
+
+  // Submissions rendering and cancel timers
+  const cancelTimers = new Map();
+
+  function renderSubmissions(){
+    submissionsList.innerHTML = '';
+    if(!submissions.length){
+      submissionsList.innerHTML = '<p class="muted">No submissions yet.</p>';
+      return;
+    }
+    // newest first
+    submissions.slice().reverse().forEach(s => {
+      const div = document.createElement('div'); div.className='sub-item';
+      const left = document.createElement('div'); left.className='sub-left';
+      const info = document.createElement('div'); info.className='sub-info';
+      info.innerHTML = `<strong>${s.wasteType}</strong> • ${Number(s.quantity).toFixed(1)} kg<br/><span class="sub-time">Recipient: ${s.recipient} • ${new Date(s.createdAt).toLocaleString()}</span>`;
+      left.appendChild(info);
+      const actions = document.createElement('div'); actions.className='sub-actions';
+      const cancelBtn = document.createElement('button');
+      cancelBtn.className = 'cancel';
+      const remaining = (s.createdAt + CANCEL_WINDOW_MS) - Date.now();
+      if(remaining > 0){
+        cancelBtn.textContent = formatRemaining(remaining);
+        cancelBtn.disabled = false;
+        cancelBtn.addEventListener('click', ()=> cancelSubmission(s.id));
+        // set interval to update remaining label
+        const interval = setInterval(()=>{
+          const rem = (s.createdAt + CANCEL_WINDOW_MS) - Date.now();
+          if(rem <= 0){
+            cancelBtn.textContent = 'Cancel (expired)';
+            cancelBtn.disabled = true;
+            clearInterval(interval);
+            cancelTimers.delete(s.id);
+          } else {
+            cancelBtn.textContent = formatRemaining(rem);
+          }
+        }, 1000);
+        cancelTimers.set(s.id, interval);
+      } else {
+        cancelBtn.textContent = 'Cancel (expired)';
+        cancelBtn.disabled = true;
+      }
+      actions.appendChild(cancelBtn);
+      div.appendChild(left);
+      div.appendChild(actions);
+      submissionsList.appendChild(div);
+    });
+  }
+
+  function formatRemaining(ms){
+    const sec = Math.floor(ms/1000);
+    const h = Math.floor(sec/3600);
+    const m = Math.floor((sec%3600)/60);
+    const s = sec%60;
+    return `Cancel (${pad(h)}:${pad(m)}:${pad(s)})`;
+  }
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function cancelSubmission(id){
+    const idx = submissions.findIndex(x=>x.id===id);
+    if(idx === -1) return;
+    const removed = submissions.splice(idx,1)[0];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+    // clear timer
+    if(cancelTimers.has(id)){ clearInterval(cancelTimers.get(id)); cancelTimers.delete(id); }
+    pushNotification(`Cancelled submission: ${removed.quantity}kg ${removed.wasteType} to ${removed.recipient}.`);
+    updateAll();
+  }
+
+  // Form submit
+  addForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    const data = {
+      id: 's_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+      wasteType: document.getElementById('wasteType').value,
+      quantity: Number(document.getElementById('quantity').value) || 0,
+      recipient: document.getElementById('recipient').value || 'Unknown',
+      notes: document.getElementById('notes').value || '',
+      createdAt: Date.now()
+    };
+    submissions.push(data);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+    pushNotification(`Submitted ${data.quantity}kg ${data.wasteType} to ${data.recipient}.`);
+    addModal.setAttribute('aria-hidden','true');
+    addForm.reset();
+    updateAll();
+  });
+
+  // Charts setup
+  const statusPieCtx = document.getElementById('statusPie').getContext('2d');
+  const typeDonutCtx = document.getElementById('typeDonut').getContext('2d');
+  const recipientBarCtx = document.getElementById('recipientBar').getContext('2d');
+
+  const statusPie = new Chart(statusPieCtx, {
+    type:'pie',
+    data:{labels:['Collected','Distributed','Pending','Cancelled'], datasets:[{data:[50,25,15,10]}]},
+    options:{plugins:{legend:{position:'bottom'}}}
+  });
+
+  const typeDonut = new Chart(typeDonutCtx, {
+    type:'doughnut',
+    data:{labels:['Cooked Food','Vegetable Scraps','Fruit','Bakery','Other'], datasets:[{data:[0,0,0,0,0]}]},
+    options:{cutout:'50%', plugins:{legend:{position:'bottom'}}}
+  });
+
+  const recipientBar = new Chart(recipientBarCtx, {
+    type:'bar',
+    data:{labels:[], datasets:[{label:'kg received', data:[]}]},
+    options:{indexAxis:'y', plugins:{legend:{display:false}}}
+  });
+
+  function updateCharts(){
+    // update typeDonut
+    const typeMap = {};
+    ['Cooked Food','Vegetable Scraps','Fruit','Bakery','Other'].forEach(t=>typeMap[t]=0);
+    submissions.forEach(s=> typeMap[s.wasteType] = (typeMap[s.wasteType]||0) + Number(s.quantity));
+    typeDonut.data.datasets[0].data = Object.values(typeMap).map(v=> Number(v.toFixed(1)));
+    typeDonut.update();
+
+    // recipient bar
+    const recMap = {};
+    submissions.forEach(s => recMap[s.recipient] = (recMap[s.recipient]||0) + Number(s.quantity));
+    const recEntries = Object.entries(recMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    recipientBar.data.labels = recEntries.map(r=>r[0]);
+    recipientBar.data.datasets[0].data = recEntries.map(r=>Number(r[1].toFixed(1)));
+    recipientBar.update();
+
+    // status pie (simple heuristic)
+    const total = submissions.length || 1;
+    const distributed = submissions.filter(s => s.distributed).length || Math.round(total*0.4);
+    const collected = Math.round(total*0.5);
+    const pending = Math.max(0, total - distributed - collected);
+    const cancelled = submissions.filter(s=>s.cancelled).length || 0;
+    statusPie.data.datasets[0].data = [collected, distributed, pending, cancelled];
+    statusPie.update();
+  }
+
+  // rotating tips
+  const TIPS = [
+    "Separate wet & dry waste at source to increase recovery value.",
+    "Feed leftover cooked food to cattle sheds after cooling and separation of packaging.",
+    "Use airtight containers for perishable donations to avoid spoilage.",
+    "Small, regular contributions make bigger impact than one-off large donations."
+  ];
+  let tipIndex = 0;
+  function showTip(){
+    tipsBox.textContent = TIPS[tipIndex];
+    tipIndex = (tipIndex + 1) % TIPS.length;
+  }
+  showTip();
+  setInterval(showTip, 7000);
+
+  // quick actions (placeholder behavior)
+  document.getElementById('browseIndustries').addEventListener('click', ()=> pushNotification('Opened Industries directory (example).'));
+  document.getElementById('browseOwners').addEventListener('click', ()=> pushNotification('Opened Cattle Owners directory (example).'));
+  document.getElementById('myContributions').addEventListener('click', ()=> {
+    document.querySelector('.panel.submissions').scrollIntoView({behavior:'smooth'});
+    pushNotification('Showing your contributions.');
+  });
+
+  // helpers
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  // persistence helpers
+  function loadSubmissions(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+      // sanitise numbers
+      return list.map(s=> ({...s, quantity: Number(s.quantity), createdAt: Number(s.createdAt)}));
+    } catch(e){
+      return [];
+    }
+  }
+
+  // overall update
+  function updateAll(){
+    // clear existing timers
+    cancelTimers.forEach((ival)=> clearInterval(ival));
+    cancelTimers.clear();
+
+    renderSubmissions();
+    updateMetrics();
+    updateCharts();
+    renderNotifications();
+  }
+
+
+  // Only seed demo if localStorage is truly empty (first visit)
+  if (!localStorage.getItem(STORAGE_KEY)) {
+    submissions = [{ id:'demo1', wasteType:'Cooked Food', quantity:12, recipient:'Cattle Shed A', notes:'Demo seed', createdAt: Date.now() - 60*60*1000 }];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+    pushNotification('Demo submission added to show layout.');
+  } else {
+    submissions = loadSubmissions();
+  }
+
+  // initialize
+  updateAll();
+
+  // cleanup on unload: clear timers
+  window.addEventListener('beforeunload', ()=> {
+    cancelTimers.forEach((ival)=> clearInterval(ival));
+  });
+
+});
+
+// Logout function
+function logout() {
+  localStorage.removeItem("currentUser");
+  window.location.href = "login.html";
+}
+  </script>
+</body>
+
+</html>

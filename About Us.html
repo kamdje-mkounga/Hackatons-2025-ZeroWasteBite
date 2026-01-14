@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">  
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Rescue Platform - About Us</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fdfdfd;
+      color: #222;
+    }
+
+    header {
+      position: absolute;
+      top: 20px;
+      left: 40px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    nav {
+      position: absolute;
+      top: 20px;
+      right: 40px;
+      display: flex;
+      gap: 30px;
+      font-size: 14px;
+      align-items: center;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+
+    nav a.button {
+      border: 1px solid #333;
+      padding: 6px 14px;
+      border-radius: 20px;
+      transition: 0.3s ease;
+    }
+
+    nav a.button:hover {
+      background: #333;
+      color: #fff;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    .left {
+      flex: 1;
+      background-image: url('https://plus.unsplash.com/premium_photo-1683140538884-07fb31428ca6?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .right {
+      flex: 1;
+      background: #f8f5f2;
+      padding: 80px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .right h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 60px;
+      margin-bottom: 30px;
+    }
+
+    .right p {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      max-width: 500px;
+    }
+
+    /* Impact Section */
+    .impact {
+      background: linear-gradient(135deg,#f8f5f2,#f8f5f2);
+      padding: 80px 40px;
+      text-align: center;
+      border-top: 1px solid #e0e0e0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .impact h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      margin-bottom: 50px;
+    }
+
+    .impact-stats {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      flex-wrap: wrap;
+    }
+
+    .impact-item {
+      text-align: center;
+      max-width: 200px;
+      padding: 20px;
+      border-left: 1px solid #ddd;
+    }
+
+    .impact-item:first-child {
+      border-left: none; /* Remove divider on first */
+    }
+
+    .impact-item i {
+      font-size: 40px;
+      color: #4CAF50;
+      margin-bottom: 15px;
+    }
+
+    .impact-item h3 {
+      font-size: 36px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .impact-item p {
+      font-size: 16px;
+      color: #555;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+      }
+      .left, .right {
+        flex: none;
+        height: 50vh;
+      }
+      .right {
+        padding: 40px 20px;
+      }
+      .right h1 {
+        font-size: 40px;
+      }
+      .impact-stats {
+        flex-direction: column;
+        gap: 40px;
+      }
+      .impact-item {
+        border-left: none;
+        border-top: 1px solid #ddd;
+      }
+      .impact-item:first-child {
+        border-top: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>ZeroWasteBite</header>
+  <nav>
+    <a href="HomePage.html"> HOME</a>
+    <a href="Contact.html">CONTACT</a>
+    <a href="login.html" class="button">JOIN US</a>
+  </nav>
+
+  <div class="container">
+    <div class="left"></div>
+    <div class="right">
+      <h1>About us.</h1>
+      <p>We are committed to rescuing surplus food and redirecting it to those in need. Our mission is to reduce food waste, fight hunger, and create a sustainable ecosystem where no meal goes to waste.</p>
+      <p>Our platform connects restaurants, households, and retailers with NGOs, shelters, and communities, ensuring that edible food reaches the right place at the right time.</p>
+      <p>With advanced tracking, AI-driven logistics, and dedicated partners, we aim to build a future where food waste is transformed into hope and nourishment for everyone.</p>
+    </div>
+  </div>
+
+  <!-- Impact Section -->
+  <section class="impact">
+    <h2>Our Impact</h2>
+    <div class="impact-stats">
+      <div class="impact-item">
+        <i class="fa-solid fa-bowl-food"></i>
+        <h3 class="counter" data-target="10000">0</h3>
+        <p>Meals Rescued</p>
+      </div>
+      <div class="impact-item">
+        <i class="fa-solid fa-seedling"></i>
+        <h3 class="counter" data-target="5">0</h3>
+        <p>Tons of Food Waste Reduced</p>
+      </div>
+      <div class="impact-item">
+        <i class="fa-solid fa-people-group"></i>
+        <h3 class="counter" data-target="2500">0</h3>
+        <p>Families Supported</p>
+      </div>
+      <div class="impact-item">
+        <i class="fa-solid fa-hand-holding-heart"></i>
+        <h3 class="counter" data-target="120">0</h3>
+        <p>NGO Partners</p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Counter Animation
+// Fetch stats from backend API
+fetch('/api/impact-stats')
+  .then(response => response.json())
+  .then(data => {
+    // Map each stat to the correct counter
+    const stats = [
+      { value: data.mealsRescued, selector: ".counter[data-target='10000']" },
+      { value: data.tonsReduced,   selector: ".counter[data-target='5']" },
+      { value: data.familiesSupported, selector: ".counter[data-target='2500']" },
+      { value: data.ngoPartners,    selector: ".counter[data-target='120']" }
+    ];
+    stats.forEach(stat => {
+      const el = document.querySelector(stat.selector);
+      animateCounter(el, stat.value);
+    });
+  });
+
+// Counter Animation
+function animateCounter(counter, target) {
+  let count = 0;
+  const speed = 200;
+  const inc = target / speed;
+  function update() {
+    if (count < target) {
+      count += inc;
+      if (count > target) count = target;
+      counter.innerText = Math.ceil(count);
+      setTimeout(update, 20);
+    } else {
+      counter.innerText = target.toLocaleString();
+    }
+  }
+  update();
+}
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipes & Food Reuse Guide</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="footer.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f8f5;
+      color: #333;
+    }
+
+ /* Header */
+    header {
+      /* background: #2d6a4f; */
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-image: url('https://static.vecteezy.com/system/resources/thumbnails/049/974/385/small_2x/top-view-of-vibrant-cultural-dishes-on-rustic-wooden-table-free-photo.jpg');
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: overlay;
+      /* background-color: rgba(45, 106, 79, 0.8); Added an overlay for text readability */
+    }
+
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 24px;
+    }
+
+    .header-left img {
+      height: 40px;
+      margin-right: 10px;
+    }
+
+ 
+    .header-center {
+      flex: 1;
+      text-align: center;
+    }
+
+    .header-center h1 {
+      margin: 5px;    
+     font-size:30px;
+    margin-left:180px;
+    }
+
+      .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+     .nav-right a {
+      display: block;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .nav-right a:hover {
+      background-color:grey;
+      border-radius:5px;
+      
+    }
+
+    .burger {
+      cursor: pointer;
+      font-size: 22px;
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+    }
+
+    .burger-menu {
+      display: none;
+      position: absolute;
+      right: 20px;
+      top: 70px;
+      background: white;
+      color: #333;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 2000;
+    }
+
+    .burger-menu.show {
+      display: block;
+    }
+
+    .burger-menu a {
+      display: block;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .burger-menu a:hover {
+      background: #d8f3dc;
+    }
+
+    /* Container */
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 2rem auto;
+    }
+
+    h2 {
+      color: #2d6a4f;
+      margin-bottom: 1rem;
+    }
+
+    /* Search Bar */
+    .search-bar {
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .search-bar input {
+      padding: 0.6rem;
+      width: 300px;
+      border: 2px solid #2d6a4f;
+      border-radius: 8px;
+    }
+
+    .icon-btn {
+      background: #2d6a4f;
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .icon-btn svg {
+        fill: currentColor;
+        width: 18px;
+        height: 18px;
+        vertical-align: middle;
+    }
+    
+    .icon-btn i {
+        font-size: 18px;
+        vertical-align: middle;
+    }
+
+    /* Recipe Section */
+    .recipe-section {
+      position: relative;
+    }
+
+    .card-grid-wrapper {
+      position: relative;
+    }
+
+    .card-grid {
+      display: flex;
+      gap: 1.5rem;
+      transition: transform 0.4s ease-in-out;
+      overflow-x: auto;
+      white-space: nowrap; /* Prevents wrapping to the next line */
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      padding-bottom: 1rem; /* Space for the scrollbar on some devices */
+    }
+
+    .card-grid::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+
+    /* Updated Card Styles */
+    .card {
+      min-width: 260px;
+      height: 270px; /* Decreased height */
+      background: white;
+      border-radius: 12px;
+      box-shadow:4px 3px 18px 11px rgba(0,0,0,0.1);
+           transition: transform 0.2s ease-in-out;
+      cursor: pointer;
+      display: inline-flex; /* Use inline-flex to work with white-space: nowrap */
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .card-image-container {
+      flex-grow: 1; /* This will make the image container take up most of the space */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      max-height: 80%; /* Image takes up to 80% of the card height */
+      z-index: 1;
+    }
+
+    .card-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* This makes the image cover the container */
+    }
+    
+    .card-content {
+      padding: 1rem;
+      background: white;
+      text-align: center;
+      position: relative;
+      margin-top: -20px; /* Overlaps with the image to create a seamless wave effect */
+      padding-top: 30px; /* Adds space above the text to not be clipped by the wave */
+      z-index: 2;
+      clip-path: url(#wavy-top-clip);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h3 {
+      margin: 0;
+      color: #40916c;
+    }
+    
+    .card-color-bg {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 1rem;
+    }
+    
+    .card-color-bg h4 {
+        margin: 0;
+        color: #333;
+    }
+
+    .arrow {
+      position: absolute;
+      top: 40%;
+      font-size: 24px;
+      cursor: pointer;
+      background: #2d6a4f;
+      color: white;
+      border-radius: 50%;
+      padding: 8px;
+      display: none;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+    .arrow svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor;
+    }
+
+    #prevArrow { left: -20px; }
+    #nextArrow { right: -20px; }
+    #prevResultArrow { left: 0; }
+    #nextResultArrow { right: 0; }
+
+    /* Search Results */
+    .search-results {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #e9f5ec;
+      border-radius: 10px;
+      display: none;
+      position: relative;
+    }
+
+    .search-results h2 {
+      margin-top: 0;
+    }
+
+    .results-grid {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      padding: 1rem 0;
+    }
+    .results-grid::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+    
+    .results-grid-wrapper {
+        position: relative;
+    }
+
+    .search-result-card {
+        min-width: 150px;
+        height: 180px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: inline-flex; /* Use inline-flex to work with white-space: nowrap */
+    }
+    
+    .search-result-card .card-image-container,
+    .search-result-card .card-color-bg {
+        max-height: 70%;
+    }
+    
+    .search-result-card .card-content {
+        padding: 0.5rem;
+    }
+
+    /* Form */
+    .form-container {
+      display: none;
+      background: white;
+      padding: 1.5rem;
+      margin: 2rem auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+    }
+
+    .form-container input,
+    .form-container textarea {
+      width:90%;
+      margin-bottom: 1rem;
+      padding: 0.8rem;
+      border: 2px solid #2d6a4f;
+      border-radius: 8px;
+    }
+    
+    .message-box {
+        background-color: #fca5a5;
+        color: #7f1d1d;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        display: none;
+    }
+
+    .form-container button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .reset-btn { background: #d00000; color: white; }
+    .post-btn { background: #2d6a4f; color: white; }
+
+    /* Guide */
+    .guide {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      background: #d8f3dc;
+      border-radius: 12px;
+    }
+    
+    .guide h2 i {
+        margin-right: 10px;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      justify-items: center;
+      align-items: center;
+    }
+
+    .guide-category {
+      background: white;
+      border-radius: 50%;
+      width: 250px;
+      height: 250px;
+      padding: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      overflow: hidden;
+      color: white; /* Base color for text */
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: overlay;
+      background-color: rgba(0, 0, 0, 0.3); /* Dark overlay */
+    }
+
+    #fruits { background-image: url('https://c.ndtvimg.com/2023-06/5l4lkmh_fruits-and-vegetables_625x300_26_June_23.jpg'); }
+    #nonveg { background-image: url('https://sulthansbiriyani.in/wp-content/uploads/2022/11/Tandoori-chicken-1.jpg'); }
+    #liquid { background-image: url('https://www.fitterfly.com/blog/wp-content/uploads/2023/06/liquid-diet_0001_Layer-1-scaled.jpg'); }
+    #dry { background-image: url('https://nutribinge.in/cdn/shop/articles/image3.jpg?v=1713258139'); }
+
+    .guide-category:hover {
+        transform: translateY(-5px);
+    }
+    
+    .guide-category h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .guide-content {
+      display: none;
+      padding-top: 10px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 0.3s ease;
+      max-height: 150px;
+      overflow-y: auto;
+      color: #333; /* Content text needs to be dark */
+    }
+    
+    .guide-category.expanded {
+        border-radius: 12px;
+        width: 300px;
+        height: auto;
+        padding: 20px;
+        cursor: default;
+        background-color: white;
+        background-image: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .guide-category.expanded h3 {
+        color: #40916c;
+    }
+
+    .guide-category.expanded .guide-content {
+        display: block;
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .guide-category ul {
+      list-style-type: disc;
+      padding: 0;
+      margin: 0;
+    }
+
+    .guide-category li {
+        margin-bottom: 5px;
+    }
+
+    .guide-category button {
+      margin-top: 0.5rem;
+      background: #2d6a4f;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .guide-input {
+      margin-top: 0.5rem;
+      display: none;
+      position: relative;
+      padding: 1rem;
+      border-radius: 10px;
+      z-index: 10;
+    }
+
+    .guide-input input {
+      width: 70%;
+      padding: 5px;
+      border: 1px solid #2d6a4f;
+      border-radius: 6px;
+    }
+
+    .guide-input button {
+      margin-left: 5px;
+      background: #40916c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    /* Responsive for small screens */
+    @media (max-width: 768px) {
+      .guide-grid {
+        grid-template-columns: 1fr;
+      }
+      .guide-category {
+          width: 90%;
+          height: auto;
+      }
+      .guide-category.expanded {
+          width: 90%;
+      }
+    }
+
+    footer {
+      margin-top: 3rem;
+      background: #2d6a4f;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      max-width: 600px;
+      width: 90%;
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #333;
+    }
+    
+    .modal-media {
+        margin-top: 1rem;
+    }
+    
+    .modal-media img, .modal-media video {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+  </style>
+
+  <!-- Hidden SVG for the wavy clip-path -->
+  <svg width="0" height="0" style="position: absolute;">
+    <defs>
+      <clipPath id="wavy-top-clip" clipPathUnits="objectBoundingBox">
+        <path d="M0,0.2 C0.2,0 0.4,0.4 0.5,0.2 C0.6,0 0.8,0.4 1,0.2 L1,1 L0,1 L0,0.2 Z" />
+      </clipPath>
+    </defs>
+  </svg>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-left" onclick="location.href='index.html'">
+      <!--<span style="font-size: 30px;"><img src="logo.png" style="width:70px; height:70px;"></span>-->
+      <!-- <h2>Food Reuse</h2> -->
+    </div>
+    <div class="header-center">
+      <h1> Recipes & Food Reuse Guide</h1>
+    </div>
+    <div class="nav-right">
+      <a href="foodmarketplace.html">Food Marketplace</a>
+      <div class="burger" id="burgerIcon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+      </div>
+    </div>
+    <div class="burger-menu" id="burgerMenu">
+      
+          <a href="Org Dashboard.html">Dashboard</a>
+          <a href="Food Marketplace.html" class="active">Food Marketplace</a>
+          <a href="recipe.html" class="active">Recipe reuse & storage Guide </a>
+          <a href="community.html">Community</a>
+       
+          <a href="Partners.html">Partners</a>
+          <a href="blog.html">Blog</a>
+          <a href="Game.html" class="active">Gamified</a>
+          <a href="login.html" id="logoutBtn">Logout</a>
+     
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search recipes...">
+      <button class="icon-btn" id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <button class="icon-btn" id="addRecipeBtn">
+        <span id="addIcon"><i class="fa-solid fa-plus"></i></span>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <div class="form-container" id="recipeForm">
+      <h2>Post Your Recipe</h2>
+      <div id="messageBox" class="message-box"></div>
+      <input type="text" id="recipeName" placeholder="Recipe Name" required>
+      <textarea id="recipeSteps" rows="4" placeholder="Steps/About this recipe"></textarea>
+      <input type="url" id="mediaUrl" placeholder="Image/Video URL (optional)">
+      <input type="text" id="authorName" placeholder="Your Name">
+      <button class="reset-btn" onclick="resetForm()">Reset</button>
+      <button class="post-btn" onclick="postRecipe()">Post</button>
+    </div>
+
+    <!-- Recipe Section -->
+    <div class="recipe-section">
+      <h2>Creative Leftover Recipes</h2>
+      <div class="card-grid-wrapper">
+        <div class="card-grid" id="recipeList">
+          <!-- Recipes will be dynamically loaded here by JS -->
+        </div>
+      </div>
+      <div class="arrow" id="prevArrow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+          </svg>
+      </div>
+      <div class="arrow" id="nextArrow">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+          </svg>
+      </div>
+    </div>
+
+    <!-- Search Results -->
+    <div class="search-results" id="searchResults">
+      <h2>🔎 Search Results</h2>
+      <div class="results-grid-wrapper">
+          <div id="resultsContainer" class="results-grid"></div>
+          <div class="arrow" id="prevResultArrow">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+              </svg>
+          </div>
+          <div class="arrow" id="nextResultArrow">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+              </svg>
+          </div>
+      </div>
+    </div>
+
+    <!-- Guide Section -->
+    <div class="guide">
+      <h2><i class="fa-solid fa-book"></i> Food Reuse & Storage Guide</h2>
+      <div class="guide-grid">
+        <div class="guide-category" id="fruits">
+          <h3>Fruit / Veggies</h3>
+          <div class="guide-content">
+              <ul>
+                <li>Leafy greens (spinach, lettuce, kale) → wash, dry thoroughly, then wrap in a paper towel and store in a breathable bag or container in the fridge.
+</li>
+                <li>Freeze ripe bananas for smoothies.</li>
+                <li>Apples, pears → refrigerate in a crisper drawer; keep away from leafy greens.</li>
+                <li>Bananas → keep at room temperature; wrap stems with foil/cling wrap to slow browning.</li>
+              </ul>
+              <button onclick="toggleGuideInput('fruitsInput')">➕ Add Tip</button>
+          </div>
+          <div class="guide-input" id="fruitsInput">
+            <input type="text" placeholder="Write your tip...">
+            <button onclick="addGuideTip('fruits')">Add</button>
+          </div>
+        </div>
+        <div class="guide-category" id="nonveg">
+          <h3>Non-Veg</h3>
+          <div class="guide-content">
+              <ul>
+                <li>Freeze cooked chicken within 2 days.</li>
+                <li>Use bones to make stock.</li>
+              </ul>
+              <button onclick="toggleGuideInput('nonvegInput')">➕ Add Tip</button>
+          </div>
+          <div class="guide-input" id="nonvegInput">
+            <input type="text" placeholder="Write your tip...">
+            <button onclick="addGuideTip('nonveg')">Add</button>
+          </div>
+        </div>
+        <div class="guide-category" id="liquid">
+          <h3>Liquid</h3>
+          <div class="guide-content">
+              <ul>
+                <li>Freeze milk in ice cube trays.</li>
+                <li>Make soups from leftover sauces.</li>
+                <li> Freeze for longer storage – Broths, soups, juices: 2–3 months; milk: up to 3 months (texture changes).</li>
+                <li> Cool before storing – Never put hot liquids directly into the fridge/freezer.</li>
+              </ul>
+              <button onclick="toggleGuideInput('liquidInput')">➕ Add Tip</button>
+          </div>
+          <div class="guide-input" id="liquidInput">
+            <input type="text" placeholder="Write your tip...">
+            <button onclick="addGuideTip('liquid')">Add</button>
+          </div>
+        </div>
+        <div class="guide-category" id="dry">
+          <h3>Dry Fruits</h3>
+          <div class="guide-content">
+              <ul>
+                <li>Keep pulses in airtight jars.</li>
+                <li>Toast stale nuts to refresh them.</li>
+                <li>Freezer – Keeps dry fruits fresh for 1–2 years; use freezer-safe bags.</li>
+                <li>Avoid Moisture & Sunlight – Moisture causes mold, heat makes oils turn rancid.</li>
+                <li> Check Before Eating – Discard if you notice bad smell, bitter taste, or mold.</li>
+              
+
+              </ul>
+              <button onclick="toggleGuideInput('dryInput')">➕ Add Tip</button>
+          </div>
+          <div class="guide-input" id="dryInput">
+            <input type="text" placeholder="Write your tip...">
+            <button onclick="addGuideTip('dry')">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- 🌱 Footer Section -->
+<footer>
+  <div class="footer-container">
+    <!-- About Section -->
+    <div class="footer-about">
+      <h3>♻️ About Us</h3>
+      <p>We connect households, farmers, restaurants, and NGOs to reduce food waste and create a sustainable impact together.</p>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="footer-links">
+      <h3>🔗 Quick Links</h3>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="marketplace.html">Food Marketplace</a></li>
+        <li><a href="recipes.html">Recipes & Guides</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="community.html">Community</a></li>
+      </ul>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="footer-contact">
+      <h3>📞 Contact Us</h3>
+      <p>Email: support@greenplate.org</p>
+      <p>Phone: +91 98765 43210</p>
+      <p>Address: Patkura, India</p>
+    </div>
+
+    <!-- Social Media -->
+    <div class="footer-social">
+      <h3>🌍 Connect with Us</h3>
+      <a href="#">🌐 Facebook</a> |
+      <a href="#">🐦 Twitter</a> |
+      <a href="#">📸 Instagram</a> |
+      <a href="#">💼 LinkedIn</a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2025 GreenPlate. All Rights Reserved. | Building a Zero-Waste Future 🌱</p>
+  </div>
+</footer>
+
+<style>
+  footer {
+    background: #2d6a4f;
+    color: white;
+    padding: 2rem 1rem 1rem;
+    margin-top: 3rem;
+  }
+
+  .footer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .footer-container h3 {
+    margin-bottom: 0.8rem;
+    color: #d8f3dc;
+  }
+
+  .footer-container p, 
+  .footer-container a, 
+  .footer-container li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #f1faee;
+    text-decoration: none;
+    list-style: none;
+  }
+
+  .footer-links ul {
+    padding: 0;
+  }
+
+  .footer-links li {
+    margin: 6px 0;
+  }
+
+  .footer-links a:hover, .footer-social a:hover {
+    color: #95d5b2;
+    text-decoration: underline;
+  }
+
+  .footer-social a {
+    color: #f1faee;
+    margin: 0 5px;
+    font-size: 14px;
+  }
+
+  .footer-bottom {
+    text-align: center;
+    border-top: 1px solid #40916c;
+    padding-top: 0.8rem;
+    font-size: 13px;
+    color: #d8f3dc;
+  }
+</style>
+
+
+  <!-- Modal for Recipe Details -->
+  <div class="modal-overlay" id="recipeModalOverlay">
+    <div class="modal-content">
+      <button class="modal-close-btn" id="closeModalBtn">×</button>
+      <h2 id="modalRecipeTitle"></h2>
+      <p id="modalRecipeSteps"></p>
+      <div id="modalMedia" class="modal-media"></div>
+    </div>
+  </div>
+
+  <script>
+    // Burger Menu Toggle
+    const burger = document.querySelector(".burger");
+    const burgerMenu = document.getElementById("burgerMenu");
+    const burgerIcon = document.getElementById("burgerIcon");
+    const addBtn = document.getElementById("addRecipeBtn");
+    const form = document.getElementById("recipeForm");
+    const addIcon = document.getElementById("addIcon");
+    const messageBox = document.getElementById("messageBox");
+
+    const menuIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>`;
+    const closeIconSvg = `<i class="fa-solid fa-xmark"></i>`;
+    
+    // Burger Menu Toggle
+    burger.addEventListener("click", () => {
+      if (burgerMenu.classList.contains("show")) {
+        burgerMenu.classList.remove("show");
+        burgerIcon.innerHTML = menuIconSvg;
+      } else {
+        burgerMenu.classList.add("show");
+        burgerIcon.innerHTML = closeIconSvg;
+      }
+    });
+
+    // Toggle Form with Plus/Cross Icon
+    addBtn.addEventListener("click", () => {
+      if (form.style.display === "block") {
+        form.style.display = "none";
+        addIcon.innerHTML = '<i class="fa-solid fa-plus"></i>';
+        hideMessageBox();
+      } else {
+        form.style.display = "block";
+        addIcon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      }
+    });
+
+    function showMessageBox(message) {
+        messageBox.textContent = message;
+        messageBox.style.display = 'block';
+    }
+
+    function hideMessageBox() {
+        messageBox.style.display = 'none';
+    }
+
+    // Reset Form
+    function resetForm() {
+      document.getElementById("recipeName").value = "";
+      document.getElementById("recipeSteps").value = "";
+      document.getElementById("mediaUrl").value = "";
+      document.getElementById("authorName").value = "";
+      hideMessageBox();
+    }
+      // Array to store all recipes
+    const recipes = [
+      {
+        name: "Leftover Rice Fritters",
+        summary: "Mix rice with veggies & spices, fry crispy fritters.",
+        steps: "1. In a bowl, combine 2 cups of leftover cooked rice, 1/2 cup finely chopped mixed vegetables (like carrots, bell peppers, and onions), and 1/4 cup flour. 2. Add a teaspoon of cumin powder, salt, and pepper to taste. Mix well until everything is combined. 3. Form small, flat patties with the mixture. 4. Heat a pan with oil over medium heat and fry the fritters for 3-4 minutes on each side until golden brown and crispy. Serve hot with a sauce of your choice.",
+        mediaUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWUTUseGDfH1z3WzgoJDKWERFgoa9Wl7CxhZlaaRuum2hDElqJ-YHM87ow-x9LIunFf00&usqp=CAU"
+      },
+      {
+        name: "Stale Bread Pudding",
+        summary: "Turn old bread into dessert with milk & sugar.",
+        steps: "1. Cut stale bread into cubes and place them in a baking dish. 2. In a separate bowl, whisk together 2 eggs, 1 1/2 cups of milk, 1/2 cup sugar, 1 teaspoon vanilla extract, and a pinch of cinnamon. 3. Pour the mixture over the bread cubes, making sure they are well-soaked. Let it sit for 15-20 minutes. 4. Bake at 350°F (175°C) for 30-40 minutes, or until the pudding is set and golden on top. Enjoy warm!",
+        mediaUrl: "https://foodoosh.com/wp-content/uploads/2023/08/240_F_630711342_Ac0DM16k3C6xuDaUYwRr6YINi1uwgbYg.jpg"
+      },
+      {
+        name: "Vegetable Scrap Soup",
+        summary: "Use peels & stems to make a hearty broth.",
+        steps: "1. Gather vegetable scraps like onion skins, carrot peels, celery ends, and mushroom stems. 2. Place them in a large pot with 8 cups of water. Add a bay leaf and a few peppercorns. 3. Bring to a boil, then reduce heat and simmer for at least 1 hour. The longer it simmers, the more flavorful the broth will be. 4. Strain the liquid, discarding the solids. Use the resulting vegetable broth as a base for any soup or stew.",
+        mediaUrl: "https://www.indianhealthyrecipes.com/wp-content/uploads/2021/08/vegetable-soup.jpg"
+      },
+      {
+        name: "Fruit Peel Jam",
+        summary: "Boil orange/mango peels with sugar for jam.",
+        steps: "1. Thoroughly wash the peels of citrus fruits (e.g., oranges, lemons) or mangoes. 2. Cut the peels into small, thin strips. 3. In a pot, combine the peels with an equal amount of sugar and a small amount of water. 4. Bring the mixture to a boil, then reduce heat and simmer, stirring occasionally, until the mixture thickens to a jam-like consistency. Let it cool and store in a jar. It's great on toast!",
+        mediaUrl: "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/recipe_pics/classic_mixed_fruit_jam.jpg"
+      },
+      {
+        name: "Leftover Mashed Potato Gnocchi",
+        summary: "Turn mashed potatoes into fluffy pasta dumplings.",
+        steps: "1. In a bowl, combine 2 cups of cold leftover mashed potatoes, 1 cup of all-purpose flour, and one egg. Mix until a dough forms. Do not overmix. 2. Divide the dough into sections and roll each into a long, thin rope (about 1/2 inch thick). 3. Cut the ropes into small, 1-inch pieces. You can press each piece with a fork to create ridges if you like. 4. Boil the gnocchi in salted water until they float to the top (3-4 minutes). Serve with your favorite sauce.",
+        mediaUrl: "https://thefoodcafe.com/wp-content/uploads/2018/07/Gnocchi-8-1.jpg"
+      },
+      {
+        name: "Rotisserie Chicken Tacos",
+        summary: "Shred leftover chicken for easy tacos.",
+        steps: "1. Shred any leftover rotisserie chicken. 2. Heat a pan and lightly fry corn or flour tortillas until warm and slightly crispy. 3. Fill the tortillas with the shredded chicken. 4. Top with your favorite taco fixings like salsa, cheese, lettuce, sour cream, and a squeeze of lime juice. A quick and delicious meal!",
+        mediaUrl: "https://www.thechunkychef.com/wp-content/uploads/2020/06/Cheesy-Baked-Chicken-Tacos-overhead2-500x375.jpg"
+      },
+      {
+        name: "Stale Cake Cake Pops",
+        summary: "Crumble old cake, mix with frosting, and shape into a fun treat.",
+        steps: "1. Crumble any leftover cake (stale or fresh) into a large bowl. 2. Add a few tablespoons of frosting and mix until the cake crumbles are moist and can be rolled into a ball. 3. Roll the mixture into small, bite-sized balls. 4. Insert a lollipop stick into each ball and dip them in melted chocolate or candy melts. Decorate with sprinkles and let them set in the refrigerator.",
+        mediaUrl: "https://sugarspunrun.com/wp-content/uploads/2023/03/Chocolate-Cake-Pops-1-of-1.jpg"
+      },
+      {
+        name: "Wilted Spinach and Feta Quiche",
+        summary: "Re-purpose wilted spinach into a savory pie.",
+        steps: "1. Preheat your oven to 375°F (190°C) and place a pie crust in a pie dish. 2. In a skillet, sauté the wilted spinach with a little garlic and olive oil until it's cooked down. 3. In a bowl, whisk together 4 eggs, 1 cup of milk or cream, and a pinch of salt and pepper. 4. Add the cooked spinach and 1/2 cup of crumbled feta cheese to the egg mixture. 5. Pour the mixture into the pie crust and bake for 35-40 minutes, or until the center is set. Let it cool slightly before serving.",
+        mediaUrl: "https://www.tasteofhome.com/wp-content/uploads/2018/01/Crustless-Spinach-Quiche_EXPS_TOHX25_7590_P2_MD_01_24_7b.jpg"
+      }
+    ];
+
+    
+    
+    // Function to create a single recipe card
+    function createRecipeCard(recipe, isSmall = false) {
+        const card = document.createElement("div");
+        card.className = `card ${isSmall ? 'search-result-card' : ''}`;
+        
+        let mediaContent;
+        if (recipe.mediaType === 'color') {
+            mediaContent = `<div class="card-color-bg" style="background-color: ${recipe.backgroundColor};"><h4 style="font-size: ${isSmall ? '1rem' : '1.2rem'};">${recipe.name}</h4></div>`;
+        } else {
+            mediaContent = `<div class="card-image-container"><img src="${recipe.mediaUrl}" alt="${recipe.name}" onerror="this.onerror=null; this.src='https://placehold.co/400x300/ff6b6b/ffffff?text=Image+Not+Found';"></div>`;
+        }
+        
+        card.innerHTML = `
+          ${mediaContent}
+          <div class="card-content">
+            <h3>${recipe.name}</h3>
+          </div>
+        `;
+        
+        card.addEventListener('click', () => showRecipeModal(recipe));
+        return card;
+    }
+
+    // Function to render recipes into a specific container
+    function renderRecipes(recipesToRender, containerId, isSmall = false) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      recipesToRender.forEach(recipe => {
+          container.appendChild(createRecipeCard(recipe, isSmall));
+      });
+      // Update arrows after rendering
+      if (containerId === 'recipeList') {
+        updateArrows('recipeList', 'prevArrow', 'nextArrow');
+      } else if (containerId === 'resultsContainer') {
+        updateArrows('resultsContainer', 'prevResultArrow', 'nextResultArrow');
+      }
+    }
+
+    // Post Recipe
+    function postRecipe() {
+      const name = document.getElementById("recipeName").value;
+      const steps = document.getElementById("recipeSteps").value;
+      let mediaUrl = document.getElementById("mediaUrl").value;
+      const author = document.getElementById("authorName").value;
+
+      if (!name || !steps) {
+        showMessageBox("Please fill Recipe Name and Steps!");
+        return;
+      }
+      
+      const newRecipe = {
+        name: name,
+        summary: steps.substring(0, 50) + "...",
+        steps: steps,
+        author: author || "Anonymous"
+      };
+
+      if (mediaUrl) {
+          newRecipe.mediaUrl = mediaUrl;
+      } else {
+          newRecipe.mediaType = 'color';
+          newRecipe.backgroundColor = '#d8f3dc'; // Light green background
+      }
+
+      recipes.unshift(newRecipe);
+      renderRecipes(recipes, "recipeList");
+
+      resetForm();
+      form.style.display = "none";
+      addIcon.innerHTML = '<i class="fa-solid fa-plus"></i>';
+    }
+    
+    // Generic function to update arrow visibility for any carousel
+    function updateArrows(containerId, prevArrowId, nextArrowId) {
+        const container = document.getElementById(containerId);
+        const prevArrow = document.getElementById(prevArrowId);
+        const nextArrow = document.getElementById(nextArrowId);
+        
+        if (!container || !prevArrow || !nextArrow) return;
+        
+        const scrollableWidth = container.scrollWidth - container.clientWidth;
+        
+        prevArrow.style.display = container.scrollLeft > 10 ? 'flex' : 'none'; // Check for a small offset
+        nextArrow.style.display = container.scrollLeft < (scrollableWidth - 10) ? 'flex' : 'none'; // Check for a small offset
+        
+        if (container.scrollWidth <= container.clientWidth) {
+            prevArrow.style.display = 'none';
+            nextArrow.style.display = 'none';
+        }
+    }
+
+    // Event listeners for main recipe carousel arrows
+    document.getElementById("nextArrow").addEventListener("click", () => {
+      const container = document.getElementById("recipeList");
+      container.scrollBy({ left: container.clientWidth, behavior: 'smooth' });
+    });
+
+    document.getElementById("prevArrow").addEventListener("click", () => {
+      const container = document.getElementById("recipeList");
+      container.scrollBy({ left: -container.clientWidth, behavior: 'smooth' });
+    });
+    
+    // Event listeners for search results carousel arrows
+    document.getElementById("nextResultArrow").addEventListener("click", () => {
+      const container = document.getElementById("resultsContainer");
+      container.scrollBy({ left: container.clientWidth, behavior: 'smooth' });
+    });
+    
+    document.getElementById("prevResultArrow").addEventListener("click", () => {
+      const container = document.getElementById("resultsContainer");
+      container.scrollBy({ left: -container.clientWidth, behavior: 'smooth' });
+    });
+
+    // Add scroll listeners to the containers to update arrow visibility in real-time
+    document.getElementById("recipeList").addEventListener("scroll", () => {
+        updateArrows('recipeList', 'prevArrow', 'nextArrow');
+    });
+    document.getElementById("resultsContainer").addEventListener("scroll", () => {
+        updateArrows('resultsContainer', 'prevResultArrow', 'nextResultArrow');
+    });
+
+    // Initial render
+    renderRecipes(recipes, "recipeList");
+
+    // Search Functionality
+    document.getElementById("searchBtn").addEventListener("click", () => {
+      const filter = document.getElementById("searchInput").value.toLowerCase();
+      const results = recipes.filter(recipe => {
+        const title = recipe.name.toLowerCase();
+        const steps = recipe.steps ? recipe.steps.toLowerCase() : '';
+        return title.includes(filter) || steps.includes(filter);
+      });
+      
+      renderRecipes(results, "resultsContainer", true); // Pass `true` for small cards
+      
+      document.getElementById("searchResults").style.display = "block";
+    });
+
+    // Guide Additions
+    const guideCategories = document.querySelectorAll(".guide-category");
+
+    guideCategories.forEach(category => {
+        category.addEventListener("click", (event) => {
+            const isInputClicked = event.target.closest('.guide-input') || event.target.tagName === 'BUTTON';
+            if (!isInputClicked) {
+                const isExpanded = category.classList.contains("expanded");
+                guideCategories.forEach(cat => cat.classList.remove("expanded"));
+                if (!isExpanded) {
+                    category.classList.add("expanded");
+                }
+            }
+        });
+    });
+
+    function toggleGuideInput(id) {
+      let inputDiv = document.getElementById(id);
+      inputDiv.style.display = inputDiv.style.display === "block" ? "none" : "block";
+    }
+
+    function addGuideTip(categoryId) {
+      let inputDiv = document.getElementById(categoryId + "Input");
+      let inputField = inputDiv.querySelector("input");
+      let value = inputField.value.trim();
+      if (value) {
+        if (value.slice(-1) !== '.') {
+          value += '.';
+        }
+        let ul = document.querySelector(`#${categoryId} ul`);
+        let li = document.createElement("li");
+        li.textContent = value;
+        ul.appendChild(li);
+        inputField.value = "";
+        inputDiv.style.display = "none";
+      }
+    }
+    
+    // Modal Logic
+    const recipeModalOverlay = document.getElementById('recipeModalOverlay');
+    const modalRecipeTitle = document.getElementById('modalRecipeTitle');
+    const modalRecipeSteps = document.getElementById('modalRecipeSteps');
+    const modalMedia = document.getElementById('modalMedia');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    function showRecipeModal(recipe) {
+      modalRecipeTitle.textContent = recipe.name;
+      modalRecipeSteps.textContent = recipe.steps;
+      
+      modalMedia.innerHTML = '';
+      if (recipe.mediaType === 'color') {
+          modalMedia.innerHTML = `<div style="background-color: ${recipe.backgroundColor}; width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; border-radius: 8px;"><h3 style="color: #333;">${recipe.name}</h3></div>`;
+      } else if (recipe.mediaUrl) {
+        const fileExtension = recipe.mediaUrl.split('.').pop().toLowerCase();
+        if (['mp4', 'webm', 'ogg'].includes(fileExtension)) {
+          const video = document.createElement('video');
+          video.src = recipe.mediaUrl;
+          video.controls = true;
+          modalMedia.appendChild(video);
+        } else {
+          const image = document.createElement('img');
+          image.src = recipe.mediaUrl;
+          image.alt = recipe.name;
+          image.onerror = () => {
+              image.src = "https://placehold.co/400x300/ff6b6b/ffffff?text=Image+Not+Found";
+          };
+          modalMedia.appendChild(image);
+        }
+      }
+
+      recipeModalOverlay.style.display = 'flex';
+    }
+
+    function hideRecipeModal() {
+      recipeModalOverlay.style.display = 'none';
+      const videoElement = modalMedia.querySelector('video');
+      if (videoElement) {
+        videoElement.pause();
+      }
+    }
+
+    closeModalBtn.addEventListener('click', hideRecipeModal);
+    recipeModalOverlay.addEventListener('click', (event) => {
+        if (event.target === recipeModalOverlay) {
+            hideRecipeModal();
+        }
+    });
+
+    // Initial update of arrows on page load
+    window.addEventListener('load', () => {
+        updateArrows('recipeList', 'prevArrow', 'nextArrow');
+        // Initial state for search results, hidden by default
+        updateArrows('resultsContainer', 'prevResultArrow', 'nextResultArrow');
+    });
+
+  </script>
+</body>
+</html>

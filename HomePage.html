@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Rescue Platform</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #fff; color: #222; }
+
+    header {
+      position: absolute; top: 20px; left: 40px;
+      font-size: 20px; font-weight: 700; letter-spacing: 2px;
+      z-index: 1000; color: white;
+    }
+    nav {
+      position: absolute; top: 20px; right: 40px;
+      display: flex; gap: 30px; font-size: 14px; align-items: center;
+      z-index: 1000;
+    }
+    nav a {
+      text-decoration: none; color: #ffffff; font-weight: 500;
+    }
+    nav a.button {
+      border: 1px solid #fff; padding: 6px 14px;
+      border-radius: 20px; transition: 0.3s ease;
+    }
+    nav a.button:hover { background: #fff; color: #333; }
+
+    section { min-height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 80px 20px; }
+
+    /* Hero */
+    .hero {
+      background: url('donation.avif') no-repeat center center/cover;
+      color: #fff; position: relative; height: 100vh;
+    }
+    .hero::after {
+      content: ""; position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+    }
+    .hero-content { position: relative; z-index: 1; text-align: center; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: 60px; margin-bottom: 20px; }
+    .hero p { font-size: 18px; max-width: 700px; margin: 0 auto 30px; line-height: 1.6; }
+    .hero a {
+      background: #fff; color: #333; padding: 12px 24px;
+      border-radius: 25px; text-decoration: none; font-weight: 600;
+      transition: 0.3s;
+    }
+    .hero a:hover { background: #333; color: #fff; }
+
+    /* Story Section 
+    .story {
+      background: #f8f5f2; width: 100%; padding: 100px 40px;
+    }
+    .story h2 {
+      font-family: 'Playfair Display', serif; font-size: 42px;
+      text-align: center; margin-bottom: 60px; color: #222;
+    }
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      max-width: 1100px;
+      margin: auto;
+    }
+    .story-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 30px 20px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .story-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    .story-card img {
+      width: 80px; height: 80px;
+      border-radius: 50%; object-fit: cover;
+      margin-bottom: 15px;
+      border: 3px solid #4CAF50;
+    }
+    .story-card h3 {
+      font-size: 20px; margin-bottom: 10px; color: #333;
+    }
+    .story-card p {
+      font-size: 15px; color: #555; line-height: 1.6;
+    }
+      */
+
+    /* Zigzag Timeline */
+    .timeline-section {
+      background: #f8f5f2;
+      padding: 80px 20px;
+      text-align: center;
+    }
+    .timeline-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 40px;
+      margin-bottom: 60px;
+    }
+    .timeline-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .timeline-wrapper svg {
+      width: 100%;
+      height: 300px;
+    }
+    .milestone {
+  position: absolute;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  width: 180px;
+}
+.milestone img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 3px solid #4caf50;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+.milestone-icon {
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+   .milestone h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+.milestone p {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.4;
+}
+/* Add this for up/down alternation */
+.milestone.up {
+  top: 120px !important;
+}
+.milestone.down {
+  top: 180px !important;
+}
+@media (max-width: 700px) {
+  .milestone.up, .milestone.down {
+    top: 150px !important;
+  }
+}
+
+    /* Impact Section */
+    .impact { background: #f8f5f2; text-align: center; padding-bottom: 100px; }
+    .impact h2 {
+      font-family: 'Playfair Display', serif; font-size: 40px; margin-bottom: 60px;
+    }
+    .impact-carousel-container {
+      perspective: 1200px; width: 100%;
+      display: flex; align-items: center; justify-content: center; position: relative;
+    }
+    .impact-carousel { width: 300px; height: 300px; position: relative; transform-style: preserve-3d; transition: transform 0.6s ease; }
+    .impact-cards .card {
+      position: absolute; top: 0; left: 0;
+      width: 260px; height: 260px; margin: 20px;
+      padding: 30px 20px; background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, box-shadow 0.8s ease;
+      will-change: transform, opacity;
+    }
+    .card-icon { font-size: 40px; margin-bottom: 15px; }
+    .card h3 { margin-bottom: 10px; font-size: 22px; }
+    .card p { font-size: 15px; line-height: 1.6; }
+    .card.active {
+      box-shadow: 0 15px 35px rgba(0, 200, 100, 0.4);
+      border: 2px solid #4CAF50;
+      transform: scale(1.15) !important;
+      z-index: 10 !important;
+    }
+
+    .carousel-btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: #fff; border: 1px solid #ccc; border-radius: 50%;
+      width: 55px; height: 55px; font-size: 26px; color: #333;
+      cursor: pointer; transition: background 0.2s, color 0.2s, transform 0.3s;
+      z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .carousel-btn:hover { background: #333; color: #fff; transform: translateY(-50%) scale(1.1); }
+    .carousel-btn-left { left: 30px; }
+    .carousel-btn-right { right: 30px; }
+
+    footer { text-align: center; padding: 20px; background: #222; color: #fff; font-size: 14px; }
+
+    @media (max-width: 900px) {
+      .story-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>ZeroWasteBite</header>
+  <nav>
+    <a href="About Us.html">ABOUT US</a>
+    <a href="Contact.html">CONTACT</a>
+    <a href="login.html" class="button">LOG IN</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Saving Food, Changing Lives.</h1>
+      <p>Our Food Rescue Platform connects surplus food from homes, restaurants, and retailers to NGOs, shelters, and communities in need.</p>
+      <a href="login.html">Join Us</a>
+    </div>
+  </section>
+
+  <!-- Story -
+  <section id="story" class="story">
+    <h2>Our Journey</h2>
+    <div class="story-grid">
+      <div class="story-card">
+        <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314" alt="Vision">
+        <h3>It Started with a Vision</h3>
+        <p>We saw the heartbreaking contrast between wasted meals and empty plates — and decided to act.</p>
+      </div>
+      <div class="story-card">
+        <img src="https://images.unsplash.com/photo-1600880292089-90a7e086ee0c" alt="Partnerships">
+        <h3>Building Partnerships</h3>
+        <p>From NGOs to restaurants, we united partners to create a strong network for food rescue.</p>
+      </div>
+      <div class="story-card">
+        <img src="https://images.unsplash.com/photo-1581092335397-9583eb1cccdc" alt="Technology">
+        <h3>Powered by Technology</h3>
+        <p>Our platform uses AI-driven logistics to ensure food reaches people in need efficiently.</p>
+      </div>
+      <div class="story-card">
+        <img src="https://images.unsplash.com/photo-1594476797240-7a6e8a0e8a1c" alt="Impact">
+        <h3>Impacting Communities</h3>
+        <p>Thousands of meals rescued and redistributed, reducing hunger and promoting sustainability.</p>
+      </div>
+    </div>
+  </section>
+-->
+  <!-- Zigzag Timeline -->
+  <section id="timeline" class="timeline-section">
+    <h2>Our Journey</h2>
+    <p style="margin-bottom: 60px; text-align: center; width: 60%;">Our journey began with a simple yet powerful idea: to bridge the gap between surplus food and those who need it most. We are the first platform,
+      where rescued food are redistributed, semi-edible food waste is fed to animals, and inedible waste is composted or converted to bioenergy.
+    </p>
+    <div class="timeline-wrapper">
+      <svg viewBox="0 0 1000 300">
+        <!-- Zig-zag curve path -->
+        <path id="zigzagPath" d="M 50 150 Q 200 50, 350 150 T 650 150 T 950 150" 
+              stroke="#4caf50" stroke-width="6" fill="none" stroke-linecap="round"/>
+      </svg>
+
+      <!-- Milestones -->
+      <div class="milestone" data-icon="🌱" data-img="vision.avif" data-title="Vision" data-text="We saw the heartbreaking contrast between wasted meals and empty plates — and decided to act."></div>
+      <div class="milestone" data-icon="🤝" data-img="https://images.unsplash.com/photo-1600880292089-90a7e086ee0c" data-title="Work" data-text="From NGOs to restaurants, we will be uniting partners to create a strong network for food rescue."></div>
+      <div class="milestone" data-icon="🚚" data-img="AI.webp" data-title="AI Surplus Predictor" data-text="Our platform uses AI to predict the surplus amount of food that can be booked beforehand to distribute.."></div>
+      <div class="milestone" data-icon="🍽️" data-img="goal.avif" data-title=" Goal" data-text="Thousands of meals will be rescued and redistributed with proper waste management, reducing hunger and promoting sustainability."></div>
+    </div>
+  </section>
+
+  <!-- Impact -->
+  <section class="impact">
+    <h2>Our Impact</h2>
+    <div class="impact-carousel-container">
+      <button class="carousel-btn carousel-btn-left" aria-label="Previous">&#8592;</button>
+      <div class="impact-carousel">
+        <div class="impact-cards">
+          <div class="card">
+            <div class="card-icon">🌍</div>
+            <h3>Sustainability</h3>
+            <p>Reducing food waste lowers carbon emissions and supports a greener planet.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🤝</div>
+            <h3>Community</h3>
+            <p>Partnering with NGOs and shelters to feed vulnerable populations with rescued food.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">📊</div>
+            <h3>Technology</h3>
+            <p>AI-driven logistics ensure food reaches where it’s needed most, on time.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🍽️</div>
+            <h3>Meals Shared</h3>
+            <p>Thousands of meals rescued and shared with families across communities.</p>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-btn carousel-btn-right" aria-label="Next">&#8594;</button>
+    </div>
+  </section>
+
+  <footer>
+    © 2025 Food Rescue Platform | All Rights Reserved
+  </footer>
+
+  <script>
+    // Zigzag timeline placement
+    const zigzagPath = document.querySelector("#zigzagPath");
+  const milestones = document.querySelectorAll(".milestone");
+  const pathLength = zigzagPath.getTotalLength();
+
+  milestones.forEach((milestone, index) => {
+    const point = zigzagPath.getPointAtLength((pathLength / (milestones.length - 1)) * index);
+    milestone.style.left = `${point.x}px`;
+    // Alternate up/down
+    if (index % 2 === 0) {
+      milestone.classList.add('up');
+    } else {
+      milestone.classList.add('down');
+    }
+    milestone.innerHTML = `
+      <div class="milestone-icon">${milestone.dataset.icon}</div>
+      <img src="${milestone.dataset.img}" alt="${milestone.dataset.title}">
+      <h3>${milestone.dataset.title}</h3>
+      <p>${milestone.dataset.text}</p>
+    `;
+  });
+
+    // Curved 3D Carousel with scaling + highlight
+    const cards = document.querySelectorAll('.impact-cards .card');
+    const btnLeft = document.querySelector('.carousel-btn-left');
+    const btnRight = document.querySelector('.carousel-btn-right');
+
+    let angle = 0;
+    const angleStep = 360 / cards.length;
+    let autoRotate;
+
+    function arrangeCards() {
+      cards.forEach((card, i) => {
+        const theta = (i * angleStep + angle) * Math.PI / 180;
+        const radius = 350; // Increased radius for better spacing between cards
+        const x = Math.sin(theta) * radius;
+        const z = Math.cos(theta) * radius;
+
+        // Calculate scale based on z position (closer to front = larger)
+        let scale = 0.6 + (z + radius) / (2 * radius) * 0.6;
+        scale = Math.max(0.6, Math.min(scale, 1.2));
+
+        // Apply 3D transforms
+        card.style.transform = `translateX(${x}px) translateZ(${z}px) scale(${scale})`;
+        card.style.zIndex = Math.round(z + radius);
+
+        // Highlight the front card
+        if (scale > 1.1) {
+          card.classList.add("active");
+        } else {
+          card.classList.remove("active");
+        }
+        
+        // Fade cards that are behind
+        card.style.opacity = scale < 0.7 ? 0.5 : 1;
+      });
+    }
+
+    function rotateCarousel(dir) {
+      angle += dir * angleStep;
+      arrangeCards();
+    }
+
+    btnLeft.addEventListener('click', () => rotateCarousel(-1));
+    btnRight.addEventListener('click', () => rotateCarousel(1));
+
+    function startAutoRotate() {
+      autoRotate = setInterval(() => {
+        rotateCarousel(1);
+      }, 4000); // Slower rotation for better viewing
+    }
+    function stopAutoRotate() { clearInterval(autoRotate); }
+
+    arrangeCards();
+    startAutoRotate();
+
+    document.querySelector('.impact-carousel-container').addEventListener('mouseenter', stopAutoRotate);
+    document.querySelector('.impact-carousel-container').addEventListener('mouseleave', startAutoRotate);
+  </script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - Food Rescue Platform</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fafafa;
+      color: #333;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .back-home {
+      position: absolute;
+      top: 18px;
+      left: 22px;
+    }
+
+    .back-home a {
+      font-size: 14px;
+      color: #4CAF50;
+      text-decoration: none;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.3s;
+    }
+
+    .back-home a:hover {
+      color: #388e3c;
+    }
+
+    header {
+      text-align: center;
+      padding: 70px 20px 20px;
+    }
+
+    header h1 {
+      font-size: 34px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-size: 15px;
+      color: #666;
+      font-weight: 300;
+    }
+
+    .contact-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      max-width: 1100px;
+      margin: 50px auto;
+      padding: 0 20px;
+      flex-grow: 1;
+    }
+
+    .contact-info,
+    .contact-form {
+      background: #fff;
+      padding: 40px;
+      border-radius: 14px;
+      border: 1px solid #eee;
+    }
+
+    .contact-info h2,
+    .contact-form h2 {
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 25px;
+      color: #4CAF50;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 18px;
+      font-size: 15px;
+      color: #444;
+      font-weight: 400;
+    }
+
+    .info-item i {
+      margin-right: 12px;
+      color: #4CAF50;
+      font-size: 18px;
+    }
+
+    .social-links {
+      margin-top: 20px;
+      display: flex;
+      gap: 18px;
+    }
+
+    .social-links a {
+      color: #4CAF50;
+      font-size: 20px;
+      transition: color 0.3s;
+    }
+
+    .social-links a:hover {
+      color: #388e3c;
+    }
+
+    .contact-form .input-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .contact-form .input-group i {
+      position: absolute;
+      top: 50%;
+      left: 14px;
+      transform: translateY(-50%);
+      font-size: 15px;
+      color: #777;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 14px 14px 14px 42px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      background: #fafafa;
+      font-weight: 400;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      border-color: #4CAF50;
+      outline: none;
+      background: #fff;
+    }
+
+    .contact-form textarea {
+      resize: none;
+      height: 120px;
+    }
+
+    .contact-form button {
+      width: 100%;
+      padding: 14px;
+      background: #4CAF50;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .contact-form button:hover {
+      background: #43a047;
+    }
+
+    footer {
+      background: #fff;
+      border-top: 1px solid #eee;
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 13px;
+      color: #777;
+      margin-top: auto;
+    }
+
+    @media (max-width: 900px) {
+      .contact-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Back to Home -->
+  <div class="back-home">
+    <a href="HomePage.html"><i class="fa-solid fa-arrow-left"></i> Home</a>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <h1>Contact Us</h1>
+    <p>We’d love to hear from you. Reach out with any questions or ideas.</p>
+  </header>
+
+  <div class="contact-container">
+    <!-- Contact Details -->
+    <div class="contact-info">
+      <h2>Our Info</h2>
+      <div class="info-item">
+        <i class="fa-solid fa-envelope"></i> contact@foodrescue.org
+      </div>
+      <div class="info-item">
+        <i class="fa-solid fa-phone"></i> +91 98765 43210
+      </div>
+      <div class="info-item">
+        <i class="fa-solid fa-location-dot"></i> Bhubaneswar, Odisha, India
+      </div>
+      <div class="social-links">
+        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="contact-form">
+      <h2>Message Us</h2>
+      <form>
+        <div class="input-group">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" placeholder="Your Name" required>
+        </div>
+        <div class="input-group">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="email" placeholder="Your Email" required>
+        </div>
+        <div class="input-group">
+          <i class="fa-solid fa-pen"></i>
+          <input type="text" placeholder="Subject" required>
+        </div>
+        <div class="input-group">
+          <i class="fa-solid fa-message"></i>
+          <textarea placeholder="Your Message" required></textarea>
+        </div>
+        <button type="submit">Send Message</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 Food Rescue Platform · Built for a sustainable future
+  </footer>
+</body>
+</html>

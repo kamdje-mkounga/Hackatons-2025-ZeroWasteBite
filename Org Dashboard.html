@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organization Dashboard | Food Rescue Platform</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { display: flex; background: #f5f8fa; color: #333; }
+
+    /* Sidebar */
+    .sidebar { width: 220px; background: #1a2b3c; color: #fff; min-height: 100vh; padding: 20px; position: fixed; top: 0; left: -240px; transition: left 0.3s ease; z-index: 200; }
+    .sidebar.open { left: 0; }
+    .sidebar .logo { font-size: 20px; font-weight: bold; margin-bottom: 30px; }
+    .sidebar nav a { display: block; padding: 10px; margin: 8px 0; color: #ddd; text-decoration: none; border-radius: 6px; transition: 0.3s; }
+    .sidebar nav a:hover { background: #2e444e; color: #fff; }
+
+    /* Main Content */
+    .main { margin-left: 0; padding: 20px; width: 100%; transition: margin-left 0.3s ease; }
+    .main.shift { margin-left: 220px; }
+
+    /* Topbar */
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .topbar h2 { font-size: 20px; }
+    .burger { font-size: 24px; cursor: pointer; margin-right: 10px; }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .topbar .profile { display: flex; align-items: center; gap: 10px; }
+    .topbar img { border-radius: 50%; }
+
+    /* Quick Actions */
+    .quick-actions { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+    .quick-actions button { flex: 1; padding: 12px; border: none; background: #3aa76d; color: white; border-radius: 8px; cursor: pointer; transition: 0.3s; min-width: 180px; }
+    .quick-actions button:hover { background: #2f8654; }
+
+    /* Impact Overview */
+    .impact { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); text-align: center; }
+
+    /* Charts */
+    .charts { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .chart-card { padding: 15px; height: 240px; }
+    .chart-card canvas { max-height: 180px; }
+
+    /* Leaderboard */
+    .leaderboard table, .messages table { width: 100%; border-collapse: collapse; }
+    .leaderboard th, .leaderboard td,
+    .messages th, .messages td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+    .leaderboard tr:nth-child(even), .messages tr:nth-child(even) { background: #f9f9f9; }
+
+    /* Responsive */
+    @media(max-width: 900px) { .charts { grid-template-columns: 1fr; } }
+    @media(max-width: 600px) { .main.shift { margin-left: 0; } }
+
+
+
+
+
+    /* STYLES FOR PREDICTION CENTER */
+    .prediction-center {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Two equal columns */
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* Make it 1 column on smaller screens */
+    @media(max-width: 1000px) {
+      .prediction-center {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    #prediction-form-card {
+      text-align: left;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Two columns for inputs */
+      gap: 15px;
+      margin-bottom: 12px;
+    }
+
+    .prediction-center .form-group {
+      margin: 0;
+    }
+    .prediction-center label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .prediction-center input[type="number"],
+    .prediction-center select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box; /* Important for layout */
+    }
+    
+    .prediction-center button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: #3aa76d;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .prediction-center button:hover {
+      background: #2f8654;
+    }
+
+    .prediction-center .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f5f8fa;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .prediction-center .result h4 {
+      font-size: 18px;
+      color: #1a2b3c;
+    }
+    .prediction-center .result span {
+      color: #3aa76d;
+      font-weight: bold;
+    }
+
+    #prediction-history-card {
+      height: auto; /* Override default chart card height */
+      min-height: 400px; /* Give it space */
+    }
+    #predictionHistoryChart {
+      max-height: 350px;
+    }
+    /* END OF NEW STYLES */
+  
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">🍏 Food Rescue</div>
+    <nav>
+      <a href="Org Dashboard.html">Dashboard</a>
+      <a href="Food Marketplace.html" class="active">Food Marketplace</a>
+      <a href="recipe.html" class="active">Recipe reuse & storage Guide </a>
+      <a href="community.html">Community</a>
+   
+      <a href="Partners.html">Partners</a>
+      <a href="blog.html">Blog</a>
+      <a href="Game.html" class="active">Gamified</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main" id="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="burger" id="burger">☰</span>
+        <h2>Welcome, Organization</h2>
+      </div>
+      <div class="profile">
+        <span>Profile</span>
+        <img src="https://via.placeholder.com/40" alt="User">
+      </div>
+    </header>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+      <button onclick="window.location.href='Food Marketplace.html'">Upload / Claim Surplus</button>
+      <button onclick="window.location.href='Food Marketplace.html'">Find Animal Feed</button>
+      <button onclick="window.location.href='Partners.html'">Connect with Partners</button>
+    </section>
+
+    <!-- Impact Overview -->
+    <section class="impact">
+      <div class="card">🍽 Meals Served <h3 id="meals">0</h3></div>
+      <div class="card">🐄 Animals Fed <h3 id="animals">0</h3></div>
+      <div class="card">📤 Uploaded Surplus <h3 id="uploaded">0</h3></div>
+      <div class="card">📥 Claimed Surplus <h3 id="claimed">0</h3></div>
+    </section>
+
+    <!-- Charts & Highlights -->
+    <section class="charts">
+      <div class="card chart-card">
+        <h3>AI Surplus Predictor</h3>
+        <canvas id="lineChart"></canvas>
+      </div>
+      <div class="card chart-card">
+        <h3>Category Predictions</h3>
+        <canvas id="pieChart"></canvas>
+      </div>
+    </section>
+
+
+    <section class="prediction-center">
+      <div class="card" id="prediction-form-card">
+        <h3>Run a New Prediction</h3>
+        <p style="margin-bottom: 15px; font-size: 14px; color: #666;">
+          Enter data to simulate surplus. This will be saved to your history.
+        </p>
+        
+        <form id="surplusPredictForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="qtyPrepared">Total Prepared (kg)</label>
+              <input type="number" id="qtyPrepared" placeholder="e.g., 50" step="0.1" required>
+            </div>
+            <div class="form-group">
+              <label for="platesServed">Plates Served</label>
+              <input type="number" id="platesServed" placeholder="e.g., 200" required>
+            </div>
+            <div class="form-group">
+              <label for="mealType">Meal Type</label>
+              <select id="mealType" required>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch" selected>Lunch</option>
+                <option value="dinner">Dinner</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="eventType">Event Type</label>
+              <select id="eventType" required>
+                <option value="regular" selected>Regular Day</option>
+                <option value="special">Special Event</option>
+                <option value="holiday">Holiday</option>
+              </select>
+            </div>
+          </div>
+          
+          <button type="submit">Predict & Save</button>
+          
+          <div class="result">
+            <h4>Predicted Surplus: <span id="predictionResult">0.00 kg</span></h4>
+          </div>
+        </form>
+      </div>
+
+      <div class="card chart-card" id="prediction-history-card">
+        <h3>Prediction History</h3>
+        <canvas id="predictionHistoryChart"></canvas>
+      </div>
+    </section>
+    <section class="leaderboard">
+
+
+    <!-- Leaderboard -->
+    <section class="leaderboard">
+      <div class="card">
+        <h3>Leaderboard</h3>
+        <table>
+          <tr><th>Rank</th><th>Name</th><th>Impact Points</th></tr>
+          <tr><td>1</td><td>Green Org</td><td>12,500</td></tr>
+          <tr><td>2</td><td>Food Bank</td><td>10,200</td></tr>
+          <tr><td>3</td><td>Happy Farmers</td><td>8,900</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- Messages from Partners -->
+    <section class="messages">
+      <div class="card">
+        <h3>Messages from Partners</h3>
+        <table id="messagesTable">
+          <tr>
+            <th>Name</th><th>Email</th><th>Message</th><th>Date</th>
+          </tr>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+const PREDICTION_HISTORY_KEY = 'surplusPredictionHistory';
+    let predictionHistoryChart; // Variable to hold the chart instance
+
+    // --- Main Prediction Logic (Simulated AI) ---
+    // This is where a real AI/ML model API call would go.
+    // For now, we use a more complex rule-based model.
+    function calculateSimulatedPrediction(prepared, plates, meal, event) {
+      let baseConsumptionPerPlate = 0.2; // Base assumption: 200g per plate
+
+      // Adjust consumption based on meal type
+      let mealMultiplier = 1.0;
+      switch (meal) {
+        case 'breakfast': mealMultiplier = 0.8; break; // Lighter meal
+        case 'lunch':     mealMultiplier = 1.0; break; // Standard meal
+        case 'dinner':    mealMultiplier = 1.2; break; // Heavier meal
+      }
+
+      // Adjust consumption based on event type
+      let eventMultiplier = 1.0;
+      switch (event) {
+        case 'regular':   eventMultiplier = 1.0; break; // Standard day
+        case 'special':   eventMultiplier = 1.25; break; // People eat more
+        case 'holiday':   eventMultiplier = 0.9; break; // People might eat out
+      }
+      
+      const totalEstimatedConsumption = plates * baseConsumptionPerPlate * mealMultiplier * eventMultiplier;
+      let predictedSurplus = prepared - totalEstimatedConsumption;
+
+      // Ensure surplus is not negative
+      return predictedSurplus < 0 ? 0 : predictedSurplus;
+    }
+
+    // --- Form Submission Handler ---
+    document.getElementById('surplusPredictForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // 1. Get all form values
+      const prepared = parseFloat(document.getElementById('qtyPrepared').value);
+      const plates = parseFloat(document.getElementById('platesServed').value);
+      const meal = document.getElementById('mealType').value;
+      const event = document.getElementById('eventType').value;
+
+      // 2. Run the "AI" logic
+      const predictedSurplus = calculateSimulatedPrediction(prepared, plates, meal, event);
+
+      // 3. Display the result
+      const resultElement = document.getElementById('predictionResult');
+      resultElement.textContent = predictedSurplus.toFixed(2) + ' kg';
+
+      // 4. Create a history record
+      const newRecord = {
+        date: new Date().toLocaleDateString('en-CA'), // YYYY-MM-DD format
+        prepared: prepared,
+        served: plates,
+        surplus: predictedSurplus,
+        meal: meal,
+        event: event
+      };
+
+      // 5. Save and update graph
+      savePredictionToHistory(newRecord);
+      loadAndDrawPredictionHistory();
+    });
+
+    // --- LocalStorage Functions ---
+    function getPredictionHistory() {
+      return JSON.parse(localStorage.getItem(PREDICTION_HISTORY_KEY)) || [];
+    }
+
+    function savePredictionToHistory(newRecord) {
+      let history = getPredictionHistory();
+      history.push(newRecord);
+      // Keep only the last 30 predictions
+      if (history.length > 30) {
+        history = history.slice(history.length - 30);
+      }
+      localStorage.setItem(PREDICTION_HISTORY_KEY, JSON.stringify(history));
+    }
+
+    // --- Chart Functions ---
+    function initializePredictionChart() {
+      const ctx = document.getElementById('predictionHistoryChart').getContext('2d');
+      predictionHistoryChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [], // Will be populated by dates
+          datasets: [{
+            label: 'Predicted Surplus (kg)',
+            data: [], // Will be populated by surplus values
+            borderColor: '#3aa76d',
+            backgroundColor: 'rgba(58,167,109,0.2)',
+            fill: true,
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    function loadAndDrawPredictionHistory() {
+      if (!predictionHistoryChart) {
+        initializePredictionChart();
+      }
+
+      const history = getPredictionHistory();
+      
+      // Extract data for the chart
+      const labels = history.map(record => record.date);
+      const data = history.map(record => record.surplus.toFixed(2));
+
+      // Update the chart
+      predictionHistoryChart.data.labels = labels;
+      predictionHistoryChart.data.datasets[0].data = data;
+      predictionHistoryChart.update();
+    }
+
+    // --- Initial Load ---
+    // Load the chart when the page starts
+    loadAndDrawPredictionHistory();
+
+    // ===============================================
+    // == END OF PREDICTION TOOL JAVASCRIPT ==
+    // ===============================================
+
+
+    // Line Chart (Your existing AI Surplus Predictor chart)
+
+
+
+
+
+
+    // Block access if not logged in
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser || currentUser.userType !== 'organization') {
+      window.location.href = "login.html";
+    }
+
+    // Burger toggle
+    const burger = document.getElementById('burger');
+    const sidebar = document.getElementById('sidebar');
+    const main = document.getElementById('main');
+    burger.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      main.classList.toggle('shift');
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('currentUser'); // clear login session
+      window.location.href = "login.html"; // redirect to login
+    });
+
+    // Line Chart
+    const ctxLine = document.getElementById('lineChart').getContext('2d');
+    new Chart(ctxLine, {
+      type: 'line',
+      data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [{
+          label: 'Surplus (kg)',
+          data: [200, 450, 300, 600, 400, 700, 500],
+          borderColor: '#3aa76d',
+          backgroundColor: 'rgba(58,167,109,0.2)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // Pie Chart - will be updated dynamically
+    const ctxPie = document.getElementById('pieChart').getContext('2d');
+    let pieChart = new Chart(ctxPie, {
+      type: 'pie',
+      data: {
+        labels: ['Fruits/Veg', 'Dairy', 'Bakery', 'Meals', 'Dry Foods', 'Animal Feed'],
+        datasets: [{
+          data: [0, 0, 0, 0, 0, 0],
+          backgroundColor: ['#3aa76d','#2f8654','#66c2a5','#ccebc5','#a6d854','#8fbc8f']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // Load messages from localStorage
+    function loadMessages() {
+      const messages = JSON.parse(localStorage.getItem('connectMessages')) || [];
+      const table = document.getElementById('messagesTable');
+
+      // Reset table with header
+      table.innerHTML = `<tr>
+        <th>Name</th><th>Email</th><th>Message</th><th>Date</th>
+      </tr>`;
+
+      messages.forEach(msg => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${msg.name}</td>
+          <td>${msg.email}</td>
+          <td>${msg.message}</td>
+          <td>${msg.date}</td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    // Calculate impact values from Food Marketplace data
+    function calculateImpactValues() {
+      const listings = JSON.parse(localStorage.getItem('foodMarketplaceListings')) || [];
+      const orderedItems = JSON.parse(localStorage.getItem('orderedItems')) || [];
+      
+      // Debug logging
+      console.log('Dashboard - Listings from localStorage:', listings.length);
+      console.log('Dashboard - Orders from localStorage:', orderedItems.length);
+      
+      let totalMeals = 0;
+      let totalAnimals = 0;
+      let totalUploaded = 0;
+      let totalClaimed = 0;
+      
+      // Calculate from listings (Uploaded Surplus)
+      listings.forEach(listing => {
+        const qty = Number(listing.qty) || 0;
+        
+        // Count all uploaded surplus
+        totalUploaded += 1;
+        
+        // Estimate meals (1.5 meals per kg) for all food categories
+        totalMeals += Math.round(qty * 1.5);
+        
+        // Count animals fed only for fruits/vegetables category
+        if (listing.category === 'fruits') {
+          totalAnimals += qty;
+        }
+      });
+      
+      // Calculate from completed orders (Claimed Surplus)
+      orderedItems.forEach(order => {
+        const qty = Number(order.qty) || 0;
+        
+        // Count all claimed surplus
+        totalClaimed += 1;
+        
+        // Estimate meals (1.5 meals per kg) for all food categories
+        totalMeals += Math.round(qty * 1.5);
+        
+        // Count animals fed only for fruits/vegetables category
+        if (order.category === 'fruits') {
+          totalAnimals += qty;
+        }
+      });
+      
+      return {
+        meals: totalMeals,
+        animals: totalAnimals,
+        uploaded: totalUploaded,
+        claimed: totalClaimed
+      };
+    }
+
+    // Update impact display
+    function updateImpactDisplay() {
+      const impact = calculateImpactValues();
+      
+      document.getElementById('meals').textContent = formatNumber(impact.meals);
+      document.getElementById('animals').textContent = formatNumber(impact.animals);
+      document.getElementById('uploaded').textContent = formatNumber(impact.uploaded);
+      document.getElementById('claimed').textContent = formatNumber(impact.claimed);
+    }
+
+    // Calculate category distribution for pie chart
+    function calculateCategoryDistribution() {
+      const listings = JSON.parse(localStorage.getItem('foodMarketplaceListings')) || [];
+      const orderedItems = JSON.parse(localStorage.getItem('orderedItems')) || [];
+      
+      const categories = {
+        'fruits': 0,
+        'dairy': 0,
+        'bakery': 0,
+        'meals': 0,
+        'dry': 0,
+        'animal': 0
+      };
+      
+      // Count from listings
+      listings.forEach(listing => {
+        if (categories.hasOwnProperty(listing.category)) {
+          categories[listing.category] += Number(listing.qty) || 0;
+        }
+      });
+      
+      // Count from completed orders
+      orderedItems.forEach(order => {
+        if (categories.hasOwnProperty(order.category)) {
+          categories[order.category] += Number(order.qty) || 0;
+        }
+      });
+      
+      return [
+        categories.fruits,
+        categories.dairy,
+        categories.bakery,
+        categories.meals,
+        categories.dry,
+        categories.animal
+      ];
+    }
+
+    // Update pie chart
+    function updatePieChart() {
+      const data = calculateCategoryDistribution();
+      pieChart.data.datasets[0].data = data;
+      pieChart.update();
+    }
+
+    // Format numbers for display
+    function formatNumber(num) {
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+      } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+      }
+      return num.toString();
+    }
+
+    // Update all dashboard data
+    function updateDashboard() {
+      updateImpactDisplay();
+      updatePieChart();
+    }
+    
+    // Make updateDashboard globally accessible
+    window.updateDashboard = updateDashboard;
+
+    // Run on load
+    loadMessages();
+    updateDashboard();
+    
+    // Update dashboard every 5 seconds to reflect changes
+    setInterval(updateDashboard, 5000);
+  </script>
+</body>
+</html>
